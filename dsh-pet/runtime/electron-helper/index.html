@@ -145,6 +145,20 @@
       .pet-bub-row > span {
         white-space: nowrap;
       }
+      /* 档位行：普通行内流，折行只发生在「) 」后的空格；金额段整段不折行 */
+      .pet-bub-tierline {
+        display: block;
+        line-height: 1.35;
+      }
+      .pet-bub-tierline > span {
+        white-space: normal;
+      }
+      .pet-bub-tierline .pet-bub-money {
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        font-weight: 650;
+        color: #1f1f1f;
+      }
       .pet-bub-sub {
         font-size: calc(var(--f) * 0.7692);
         color: rgba(43, 43, 43, 0.6);

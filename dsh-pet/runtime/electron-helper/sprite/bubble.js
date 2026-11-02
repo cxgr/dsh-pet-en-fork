@@ -137,12 +137,13 @@ Object.assign(PetSprite.prototype, {
       const rows = this.balanceState ? S.balancePageView(this.balanceState, this.balanceViewIndex) : this.balanceView;
       const hasTier = rows.some((r) => r.role === 'tier');
       if (hasTier) {
-        // deepseek 余额单行：余额（峰/谷）¥x — 档位字着色
+        // deepseek 余额单行：Balance (峰/谷) ¥x — 档位字着色；金额段整段不折行
         const line = document.createElement('div');
-        line.className = 'pet-bub-row';
+        line.className = 'pet-bub-tierline';
         for (const r of rows) {
           const span = document.createElement('span');
           if (r.role === 'tier') span.className = 'pet-bub-tier pet-bub-tier-' + r.tier;
+          else if (r.role === 'money') span.className = 'pet-bub-money';
           span.textContent = r.text;
           line.appendChild(span);
         }

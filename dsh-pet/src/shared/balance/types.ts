@@ -197,6 +197,8 @@ export type BalanceBubbleRow =
   | { role: 'sub'; text: string }
   | { role: 'error'; text: string }
   | { role: 'tier'; tier: PricingTier; text: string }
+  /** 金额段：与档位同一行内联，但自身不折行（换行只发生在它前面的空格） */
+  | { role: 'money'; text: string }
   | {
       /** 展开态的一行，对应一个窗口 */
       role: 'quota';

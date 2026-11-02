@@ -45,7 +45,8 @@ function moneyRows(v: BalanceView): BalanceBubbleRow[] {
   return [
     { role: 'label', text: 'Balance (' },
     { role: 'tier', tier: v.tier, text: v.tier === 'peak' ? 'Peak' : 'Off-peak' },
-    { role: 'label', text: ') ' + amount },
+    { role: 'label', text: ') ' },
+    { role: 'money', text: amount },
   ];
 }
 

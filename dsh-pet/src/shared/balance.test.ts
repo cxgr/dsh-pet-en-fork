@@ -109,7 +109,9 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
     });
     assert.equal(ds[0]?.text, 'Balance (');
     assert.equal(ds[1]?.role, 'tier'); // 峰/谷由数据带出，这里只钉结构与金额
-    assert.equal(ds[2]?.text, ') ¥8.79');
+    assert.equal(ds[2]?.text, ') ');
+    assert.equal(ds[3]?.role, 'money');
+    assert.equal(ds[3]?.text, '¥8.79');
   });
 
   test('money：服务商没给档位装饰时不编峰谷，退化成「余额 ¥x.xx」', () => {
@@ -158,7 +160,9 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       '两端的行结构必须逐位一致',
     );
     assert.equal(account[0]?.text, 'Balance (');
-    assert.equal(account[2]?.text, ') ¥9.99');
+    assert.equal(account[2]?.text, ') ');
+    assert.equal(account[3]?.role, 'money');
+    assert.equal(account[3]?.text, '¥9.99');
 
     // USD 钱包：同一位置换成 $（其余逐字不变）
     const usd = balanceBubbleView({
@@ -168,7 +172,9 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       wallets: [{ currency: 'USD', total: '12.50', granted: '0.00', toppedUp: '12.50' }],
       tier: 'idle',
     });
-    assert.equal(usd[2]?.text, ') $12.50');
+    assert.equal(usd[2]?.text, ') ');
+    assert.equal(usd[3]?.role, 'money');
+    assert.equal(usd[3]?.text, '$12.50');
   });
 });
 

@@ -65,6 +65,7 @@ const bubbleCss = [
   // 不会把右括号甩到第二行开头。
   '.dsh-pet-bubble .pet-bub-tierline{display:block;line-height:1.35}',
   '.dsh-pet-bubble .pet-bub-tierline>span{white-space:normal}',
+  '.dsh-pet-bubble .pet-bub-tierline .pet-bub-money{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:650;color:#1f1f1f}',
   '.dsh-pet-bubble .pet-bub-sub{font-size:calc(var(--f)*0.7692);color:rgba(43,43,43,.6)}',
   '.dsh-pet-bubble .pet-bub-val{font-variant-numeric:tabular-nums;font-weight:650;color:#1f1f1f}',
   '.dsh-pet-bubble .pet-bub-err{color:#d94f3d;font-size:calc(var(--f)*0.7692)}',
@@ -132,6 +133,7 @@ function rowsToNodes(h: typeof jsx, rows: BalanceBubbleRow[]): ReactNode {
             children: r.text,
           });
         }
+        if (r.role === 'money') return h('span', { key: i, className: 'pet-bub-money', children: r.text });
         // 「Balance (」之间的空格换成不换行空格：只让「) ¥」处可以折行。
         const text = i === 0 ? r.text.replace(' (', '\u00a0(') : r.text;
         return h('span', { key: i, children: text });
