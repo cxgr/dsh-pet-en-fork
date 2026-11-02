@@ -32,6 +32,9 @@ export function petPersona(conf: Record<string, unknown>, pet: Record<string, un
   return typeof entry === 'string' ? entry : '';
 }
 
+/** 语言约束：宠物一律说英语——人设、表情包名与时间背景都可能带中文，不写死这句模型会跟着中文走。 */
+const LANGUAGE_LINE = 'Always reply in English, whatever language the persona, labels or earlier context use.';
+
 /** composeSystemPrompt 的入参 */
 export interface SystemPromptParts {
   /** 已回落到生效值的人设正文（petPersona 的结果；空串 = 没有人设，只有名字 + 时间） */
@@ -56,7 +59,7 @@ export interface SystemPromptParts {
 export function composeSystemPrompt(parts: SystemPromptParts): string {
   const name = String(parts.name || parts.id);
   const nameLine = name ? 'Your name is "' + name + '".' : '';
-  const lines = [parts.prompt, nameLine].filter((line) => line !== '');
+  const lines = [parts.prompt, nameLine, LANGUAGE_LINE].filter((line) => line !== '');
   const time = timeContextOf(parts.now);
   if (time) {
     lines.push(time);

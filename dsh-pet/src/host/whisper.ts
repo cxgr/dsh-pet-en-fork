@@ -25,11 +25,11 @@ export type WhisperGenerateResult =
 const TIMEOUT_MS = 30_000;
 
 /** 碎碎念指令：纯文本（没有配图时的原样请求）。 */
-const USER_TEXT = 'Mutter a casual everyday whisper, just one sentence, 20 words max.';
+const USER_TEXT = 'Mutter a casual everyday whisper, just one sentence, 20 words max. Reply in English.';
 
 /** 梦话指令：睡觉期间嘟囔一句。与碎碎念指令同属「功能指令」，不进配置（配置里只有人设）。 */
 const SLEEP_TALK_TEXT =
-  'You are asleep. Mumble a bit of dream talk, just one sentence, 20 words max; keep it vague and half-awake, and do not respond to anyone while awake.';
+  'You are asleep. Mumble a bit of dream talk, just one sentence, 20 words max; keep it vague and half-awake, and do not respond to anyone while awake. Reply in English.';
 
 /** 梦话指令的对外出口：调用方传进 generateWhisper 的 instruction，避免再抄一份文案。 */
 export const SLEEP_TALK_INSTRUCTION = SLEEP_TALK_TEXT;
@@ -49,7 +49,7 @@ function userTextWithMeme(meme: { name: string; desc: string }): string {
     ' (' +
     meme.desc +
     ').\n' +
-    'Make the sentence fit the mood/scene of the image naturally, as if said along with the picture; do not describe the picture itself.'
+    'Make the sentence fit the mood/scene of the image naturally, as if said along with the picture; do not describe the picture itself. Reply in English.'
   );
 }
 

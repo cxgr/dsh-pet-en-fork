@@ -15,6 +15,9 @@ import { composeSystemPrompt, petPersona } from './persona.ts';
 /** 固定时刻：2026-10-21（星期三）14:15，无节日窗口——时间行稳定可断言 */
 const NOW = new Date(2026, 9, 21, 14, 15);
 
+/** 拼装层固定追加的语言约束行；断言里用它，避免同一句话抄三遍 */
+const LANG = 'Always reply in English, whatever language the persona, labels or earlier context use.';
+
 describe('petPersona —— 实例级 → 条目级 → 空', () => {
   test('实例写了 → 用实例的（完全取代条目，不拼接）', () => {
     const conf = { whisperPrompt: '条目人设' };
@@ -46,24 +49,25 @@ describe('petPersona —— 实例级 → 条目级 → 空', () => {
 });
 
 describe('composeSystemPrompt —— 分段拼装', () => {
-  test('人设 + 名字 + 时间：顺序固定，行间单个换行', () => {
+  test('人设 + 名字 + 语言约束 + 时间：顺序固定，行间单个换行', () => {
     const out = composeSystemPrompt({ prompt: '你是小女仆', name: '蓝毛', id: 'main', now: NOW });
     const lines = out.split('\n');
     assert.equal(lines[0], '你是小女仆');
     assert.equal(lines[1], 'Your name is "蓝毛".');
-    assert.ok(lines[2].startsWith('【当下】现在是2026年10月21日星期三 14:15，下午，工作日'), '第三行必须是时间背景');
-    assert.equal(lines.length, 3, '不带历史说明时不多不少三段');
+    assert.equal(lines[2], LANG);
+    assert.ok(lines[3].startsWith('【当下】现在是2026年10月21日星期三 14:15，下午，工作日'), '第四行必须是时间背景');
+    assert.equal(lines.length, 4, '不带历史说明时不多不少四段');
   });
 
   test('historyTimes → 末尾追加【历史】段，仍在时间背景之后', () => {
     const out = composeSystemPrompt({ prompt: '你是小女仆', name: '蓝毛', id: 'main', now: NOW, historyTimes: true });
     const lines = out.split('\n');
-    assert.equal(lines.length, 4, '带历史说明时是四段');
+    assert.equal(lines.length, 5, '带历史说明时是五段');
     assert.ok(
-      lines[3].startsWith('[History] Things you said earlier are prefixed with [month day hour:minute]'),
-      `第四行必须是【历史】：${lines[3]}`,
+      lines[4].startsWith('[History] Things you said earlier are prefixed with [month day hour:minute]'),
+      `第五行必须是【历史】：${lines[4]}`,
     );
-    assert.ok(lines[3].includes('do not write a time'), '必须明确禁止在回复正文里写时间');
+    assert.ok(lines[4].includes('do not write a time'), '必须明确禁止在回复正文里写时间');
   });
 
   test('historyTimes 但时间非法 → 【历史】也不加（它整句在引用“现在”）', () => {
@@ -74,7 +78,7 @@ describe('composeSystemPrompt —— 分段拼装', () => {
       now: new Date('nope'),
       historyTimes: true,
     });
-    assert.equal(out, 'Your name is "蓝毛".');
+    assert.equal(out, 'Your name is "蓝毛".\n' + LANG);
   });
 
   test('historyTimes 缺省 / false → 不出现【历史】（碎碎念没有历史）', () => {
@@ -97,20 +101,20 @@ describe('composeSystemPrompt —— 分段拼装', () => {
 
   test('name 与 id 都空 → 整段名字声明省略（不留空行、不留空引号）', () => {
     const out = composeSystemPrompt({ prompt: '你是小女仆', name: '', id: '', now: NOW });
-    assert.ok(out.startsWith('你是小女仆\n【当下】'), `实际：${JSON.stringify(out.slice(0, 20))}`);
+    assert.ok(out.startsWith('你是小女仆\n' + LANG + '\n【当下】'), `实际：${JSON.stringify(out.slice(0, 20))}`);
     assert.ok(!out.includes('Your name is'));
     assert.ok(!out.includes('""'));
   });
 
   test('时间非法（NaN）→ 整行不加，且不留尾部换行', () => {
     const out = composeSystemPrompt({ prompt: '你是小女仆', name: '蓝毛', id: 'main', now: new Date('nope') });
-    assert.equal(out, '你是小女仆\nYour name is "蓝毛".');
+    assert.equal(out, '你是小女仆\nYour name is "蓝毛".\n' + LANG);
   });
 
   test('多行人设原样保留（不压平、不截断）', () => {
     const prompt = '第一行\n第二行\n第三行';
     const out = composeSystemPrompt({ prompt, name: '蓝毛', id: 'main', now: new Date('nope') });
-    assert.equal(out, prompt + '\nYour name is "蓝毛".');
+    assert.equal(out, prompt + '\nYour name is "蓝毛".\n' + LANG);
   });
 
   test('时间背景每次现算：同一秒之外的两个时刻产出不同的时间行', () => {
