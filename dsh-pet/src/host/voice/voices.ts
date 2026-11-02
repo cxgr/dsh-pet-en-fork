@@ -16,10 +16,10 @@ export interface VoiceInfo {
 
 /** 允许请求的四个中文音色；标记 `default` 的那个是缺省值。 */
 export const VOICES: readonly VoiceInfo[] = [
-  { id: 'zh-CN-XiaoxiaoNeural', name: '晓晓', tag: '女 · 通用', default: false },
-  { id: 'zh-CN-XiaoyiNeural', name: '晓伊', tag: '女 · 活泼', default: true },
-  { id: 'zh-CN-YunxiNeural', name: '云希', tag: '男 · 年轻', default: false },
-  { id: 'zh-CN-YunjianNeural', name: '云健', tag: '男 · 沉稳', default: false },
+  { id: 'zh-CN-XiaoxiaoNeural', name: 'Xiaoxiao', tag: 'Female · General', default: false },
+  { id: 'zh-CN-XiaoyiNeural', name: 'Xiaoyi', tag: 'Female · Lively', default: true },
+  { id: 'zh-CN-YunxiNeural', name: 'Yunxi', tag: 'Male · Young', default: false },
+  { id: 'zh-CN-YunjianNeural', name: 'Yunjian', tag: 'Male · Steady', default: false },
 ];
 
 /** 默认音色 id；请求与配置都没指定时用它，必须与 {@link VOICES} 里 `default` 标记的那个一致。 */

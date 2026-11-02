@@ -202,7 +202,7 @@ export function createCardEntry(rt: CardEntryRuntime) {
       try {
         encoded = await captureDisplayFrame();
       } catch (error) {
-        const reason = '截屏失败：' + (error instanceof Error ? error.message : String(error));
+        const reason = 'Screen capture failed: ' + (error instanceof Error ? error.message : String(error));
         const opened = chatRef.current;
         if (opened !== null) {
           opened.flash(reason);

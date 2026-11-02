@@ -170,7 +170,7 @@ export async function hearAudio(url: string, audio: string, signal?: AbortSignal
     });
     const raw: unknown = await res.json().catch(() => null);
     if (!raw || typeof raw !== 'object') {
-      return { ok: false, reason: 'network', message: '识别响应不是 JSON' };
+      return { ok: false, reason: 'network', message: 'Recognition response was not JSON' };
     }
     const body = raw as Record<string, unknown>;
     if (body.ok === true && typeof body.text === 'string') return { ok: true, text: body.text };

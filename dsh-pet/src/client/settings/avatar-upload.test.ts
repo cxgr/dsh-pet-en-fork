@@ -41,7 +41,7 @@ describe('postAvatar', () => {
 
   test('业务失败但没带文案 → 兜一个通用失败', async () => {
     const { impl } = fakeFetch({ ok: false });
-    assert.deepEqual(await postAvatar('cat', 'AAA=', impl), { ok: false, message: '上传失败' });
+    assert.deepEqual(await postAvatar('cat', 'AAA=', impl), { ok: false, message: 'Upload failed' });
   });
 
   test('HTTP 非 2xx → 带状态码的失败文案', async () => {

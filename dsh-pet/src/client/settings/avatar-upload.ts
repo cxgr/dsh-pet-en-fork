@@ -37,7 +37,7 @@ export async function encodeAvatarFile(file: File): Promise<{ base64: string; me
   canvas.width = Math.max(1, Math.round(width * scale));
   canvas.height = Math.max(1, Math.round(height * scale));
   const ctx = canvas.getContext('2d');
-  if (ctx === null) throw new Error('浏览器不支持缩放这张图');
+  if (ctx === null) throw new Error('This browser cannot downscale images');
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   const dataUrl = canvas.toDataURL('image/png');
   return { base64: dataUrl.slice(dataUrl.indexOf(',') + 1), mediaType: 'image/png' };
@@ -62,8 +62,8 @@ export async function postAvatar(
     body: JSON.stringify({ base64 }),
   });
   const raw = (await res.json().catch(() => null)) as { ok?: unknown; message?: unknown } | null;
-  if (!res.ok || raw === null) return { ok: false, message: '上传失败（HTTP ' + res.status + '）' };
-  if (raw.ok !== true) return { ok: false, message: typeof raw.message === 'string' ? raw.message : '上传失败' };
+  if (!res.ok || raw === null) return { ok: false, message: 'Upload failed (HTTP ' + res.status + ')' };
+  if (raw.ok !== true) return { ok: false, message: typeof raw.message === 'string' ? raw.message : 'Upload failed' };
   return { ok: true };
 }
 
