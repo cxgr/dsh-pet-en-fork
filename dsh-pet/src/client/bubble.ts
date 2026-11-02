@@ -43,7 +43,7 @@ const bubbleCss = [
     'border-radius:calc(var(--f)*0.7692);' +
     'background:rgba(255,255,255,.92);' +
     '--f0:var(--dsh-pet-font-bubble,calc(var(--dsh-pet-size)*0.0455));--f:var(--f0);' +
-    'color:#2b2b2b;font-family:var(--dsh-pet-font-family,"ShangshouSoftCandy","Yuanti SC","YouYuan","幼圆","Comic Sans MS","PingFang SC","Microsoft YaHei",sans-serif);' +
+    'color:#2b2b2b;font-family:var(--dsh-pet-font-family,"Comic Sans MS","Segoe UI",system-ui,"ShangshouSoftCandy","Yuanti SC","YouYuan","幼圆","PingFang SC","Microsoft YaHei",sans-serif);' +
     'font-size:var(--f);line-height:1.6;z-index:3;pointer-events:none;' +
     'box-shadow:0 calc(var(--f)*0.1978) calc(var(--f)*0.7692) rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.08);' +
     'backdrop-filter:blur(6px);opacity:0;transition:opacity .25s ease;' +
@@ -61,6 +61,7 @@ const bubbleCss = [
   '.dsh-pet-bubble .pet-bub-row{display:flex;justify-content:space-between;gap:calc(var(--f)*0.6593);flex-wrap:wrap}',
   // 档位行由多个片段拼成：只在片段之间换行，片段内部不拆字，避免竖排。
   '.dsh-pet-bubble .pet-bub-row>span{white-space:nowrap}',
+  '.dsh-pet-bubble .pet-bub-row-inline{justify-content:flex-start;gap:calc(var(--f)*0.15)}',
   '.dsh-pet-bubble .pet-bub-sub{font-size:calc(var(--f)*0.7692);color:rgba(43,43,43,.6)}',
   '.dsh-pet-bubble .pet-bub-val{font-variant-numeric:tabular-nums;font-weight:650;color:#1f1f1f}',
   '.dsh-pet-bubble .pet-bub-err{color:#d94f3d;font-size:calc(var(--f)*0.7692)}',
@@ -117,7 +118,7 @@ function rowsToNodes(h: typeof jsx, rows: BalanceBubbleRow[]): ReactNode {
   // 含档位段时同一行内联渲染，峰/谷着色。
   if (rows.some((r) => r.role === 'tier')) {
     return h('div', {
-      className: 'pet-bub-row',
+      className: 'pet-bub-row pet-bub-row-inline',
       children: rows.map((r, i) => {
         // 进度条行不会与档位段同现。
         if (r.role === 'quota') return null;

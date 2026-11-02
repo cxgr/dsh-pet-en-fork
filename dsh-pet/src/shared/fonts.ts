@@ -21,7 +21,7 @@ export const FONT_PRESETS: FontPreset[] = [
   {
     id: 'candy',
     stack:
-      '"ShangshouSoftCandy","Yuanti SC","YouYuan","幼圆","Comic Sans MS","PingFang SC","Microsoft YaHei",sans-serif',
+      '"Comic Sans MS","Segoe UI",system-ui,"ShangshouSoftCandy","Yuanti SC","YouYuan","幼圆","PingFang SC","Microsoft YaHei",sans-serif',
   },
   { id: 'yahei', stack: '"Microsoft YaHei","PingFang SC",sans-serif' },
   { id: 'youyuan', stack: '"YouYuan","Yuanti SC",sans-serif' },
