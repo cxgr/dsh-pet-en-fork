@@ -61,7 +61,10 @@ const bubbleCss = [
   '.dsh-pet-bubble .pet-bub-row{display:flex;justify-content:space-between;gap:calc(var(--f)*0.6593);flex-wrap:wrap}',
   // 档位行由多个片段拼成：只在片段之间换行，片段内部不拆字，避免竖排。
   '.dsh-pet-bubble .pet-bub-row>span{white-space:nowrap}',
-  '.dsh-pet-bubble .pet-bub-row-inline{justify-content:flex-start;gap:calc(var(--f)*0.15)}',
+  // 档位行不用 flex：三段按普通行内流排，折行只发生在「) ¥」的空格处，
+  // 不会把右括号甩到第二行开头。
+  '.dsh-pet-bubble .pet-bub-tierline{display:block;line-height:1.35}',
+  '.dsh-pet-bubble .pet-bub-tierline>span{white-space:normal}',
   '.dsh-pet-bubble .pet-bub-sub{font-size:calc(var(--f)*0.7692);color:rgba(43,43,43,.6)}',
   '.dsh-pet-bubble .pet-bub-val{font-variant-numeric:tabular-nums;font-weight:650;color:#1f1f1f}',
   '.dsh-pet-bubble .pet-bub-err{color:#d94f3d;font-size:calc(var(--f)*0.7692)}',
@@ -118,7 +121,7 @@ function rowsToNodes(h: typeof jsx, rows: BalanceBubbleRow[]): ReactNode {
   // 含档位段时同一行内联渲染，峰/谷着色。
   if (rows.some((r) => r.role === 'tier')) {
     return h('div', {
-      className: 'pet-bub-row pet-bub-row-inline',
+      className: 'pet-bub-tierline',
       children: rows.map((r, i) => {
         // 进度条行不会与档位段同现。
         if (r.role === 'quota') return null;
@@ -129,7 +132,9 @@ function rowsToNodes(h: typeof jsx, rows: BalanceBubbleRow[]): ReactNode {
             children: r.text,
           });
         }
-        return h('span', { key: i, children: r.text });
+        // 「Balance (」之间的空格换成不换行空格：只让「) ¥」处可以折行。
+        const text = i === 0 ? r.text.replace(' (', '\u00a0(') : r.text;
+        return h('span', { key: i, children: text });
       }),
     });
   }
