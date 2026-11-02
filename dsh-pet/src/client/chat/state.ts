@@ -96,7 +96,7 @@ export function createPetChatState(rt: ChatPanelRuntime): () => ChatPanelState {
       ...shell,
       rounds,
       hasOlder: allRounds.length > rounds.length,
-      petName: pet?.name || '宠',
+      petName: pet?.name || 'Pet',
       assetRoot: pet?.assetRoot ?? '',
       memoryRounds,
       hasMemoryLine: memoryBoundaryIndex(allRounds.length, memoryRounds) !== null,

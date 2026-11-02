@@ -78,10 +78,10 @@ describe('buildMemeBranch —— 菜单形状', () => {
   test('开关开启 + 分界：两级结构，组内每项都带图名与 whisper 动作', () => {
     const branch = buildMemeBranch({ memes: THREE, chatImageEnabled: true, chatImageLimit: 2 });
     assert.ok(branch, '有可用图时必须给出分支');
-    assert.equal(branch.label, '配图');
+    assert.equal(branch.label, 'Memes');
     assert.deepEqual(
       branch.children.map((group) => group.label),
-      ['纳入对话的配图', '其他'],
+      ['Used in chat', 'Other'],
     );
     const leaves = leavesOf(branch);
     assert.deepEqual(
@@ -99,7 +99,7 @@ describe('buildMemeBranch —— 菜单形状', () => {
     assert.ok(branch);
     assert.deepEqual(
       branch.children.map((group) => group.label),
-      ['其他'],
+      ['Other'],
     );
     assert.equal(leavesOf(branch).length, 3);
   });
@@ -109,7 +109,7 @@ describe('buildMemeBranch —— 菜单形状', () => {
     assert.ok(branch);
     assert.deepEqual(
       branch.children.map((group) => group.label),
-      ['纳入对话的配图'],
+      ['Used in chat'],
     );
   });
 

@@ -45,6 +45,6 @@ describe('isSleepHotkey —— 裸按 Z 才切换', () => {
   });
 
   test('菜单文案与按键同一份事实', () => {
-    assert.equal(SLEEP_HOTKEY_HINT, 'Z 键');
+    assert.equal(SLEEP_HOTKEY_HINT, 'Z');
   });
 });

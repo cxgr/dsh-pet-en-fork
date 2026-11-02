@@ -1,5 +1,7 @@
 # dsh-pet 🐾
 
+> **English fork.** Personal fork of [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet) with the pet's user-facing UI in English: right-click menu (including action and meme names), chat panel, to-do panel, balance bubbles, notifications and the bundled pet's persona. Upstream stays the canonical project; this fork only changes display text — asset names, config keys and file paths are untouched.
+
 <p align="center">
   <a href="https://www.npmjs.com/package/dsh-pet"><img alt="npm version" src="https://img.shields.io/npm/v/dsh-pet?label=npm&color=blue"></a>
   <a href="https://www.npmjs.com/package/dsh-pet"><img alt="npm monthly downloads" src="https://img.shields.io/npm/dm/dsh-pet?label=%E6%9C%88%E4%B8%8B%E8%BD%BD&color=brightgreen"></a>

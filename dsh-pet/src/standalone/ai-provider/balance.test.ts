@@ -20,7 +20,7 @@ test('缺密钥：落成 credential-missing，并把 host 半侧的凭证名带�
     ok: false,
     provider: 'deepseek-official',
     reason: 'credential-missing',
-    message: '缺少凭证 DEEPSEEK_API_KEY',
+    message: 'Missing credentials: DEEPSEEK_API_KEY',
   });
 });
 
@@ -29,6 +29,6 @@ test('账号路由：独立模式没有账号服务，只能明确不可用而�
     ok: false,
     provider: 'deepseek-account',
     reason: 'credential-missing',
-    message: '缺少账号服务（deepseek-account）',
+    message: 'Missing account service (deepseek-account)',
   });
 });

@@ -81,9 +81,9 @@ describe('chatActionNames —— 对话联动的动作范围（只有 categories
 describe('actionInstruction —— 注入 user 正文的动作指令', () => {
   test('与配图同句式：可选、按语境挑、没有合适的就不写', () => {
     const text = actionInstruction(['优雅女仆舞']);
-    assert.ok(text.includes('[动作]'), '必须有 [动作] 段');
-    assert.ok(text.includes('挑最贴合当前语境的'), '要按语境挑，不是随机抽');
-    assert.ok(text.includes('没有合适的就完全不要写这个标记'), '不强选');
+    assert.ok(text.includes('[Action]'), '必须有 [Action] 段');
+    assert.ok(text.includes('best fits the current context'), '要按语境挑，不是随机抽');
+    assert.ok(text.includes('omit the marker entirely'), '不强选');
   });
 
   test('每个名字各占一行（与配图清单同款）', () => {
@@ -96,7 +96,7 @@ describe('actionInstruction —— 注入 user 正文的动作指令', () => {
   test('标记格式与解析一致：另起一行写 [动作:名称]', () => {
     const text = actionInstruction(['优雅女仆舞']);
     assert.ok(text.includes('[动作:名称]'));
-    assert.ok(text.includes('名称原样照抄'));
+    assert.ok(text.includes('copy the name verbatim'));
   });
 });
 

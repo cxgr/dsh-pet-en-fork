@@ -124,7 +124,7 @@ export async function handleStateRoutes(deps: PetRouteDeps, input: RouteInput): 
     const payload = parsed as { state?: unknown; task?: unknown };
     const state = payload.state;
     if (typeof state !== 'string' || !(HOST_WORK_STATUS_STATES as readonly string[]).includes(state))
-      return failResult('bad-request', `state 必须是 ${HOST_WORK_STATUS_STATES.join(' / ')} 之一`);
+      return failResult('bad-request', `state must be one of ${HOST_WORK_STATUS_STATES.join(' / ')}`);
     let task: string | null | undefined;
     if (Object.prototype.hasOwnProperty.call(payload, 'task')) {
       if (payload.task === null) {

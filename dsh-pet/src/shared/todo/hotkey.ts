@@ -7,7 +7,7 @@ import { isBareKey } from '../hotkey.ts';
 import type { HotkeyEvent } from '../hotkey.ts';
 
 /** 快捷键的显示文案（菜单项右侧灰字）。与 {@link isTodoHotkey} 的按键保持同一份事实。 */
-export const TODO_HOTKEY_HINT = 'D 键';
+export const TODO_HOTKEY_HINT = 'D';
 
 /**
  * 这次按键该不该开关待办面板。

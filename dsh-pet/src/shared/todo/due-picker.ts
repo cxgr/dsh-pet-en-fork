@@ -11,7 +11,10 @@ import { monthCells } from './calendar.ts';
 import { dueLabel, formatDateTimeLocal } from './format.ts';
 
 /** 周一为一周首日，与国内日历习惯一致。 */
-const WEEK_HEAD = ['一', '二', '三', '四', '五', '六', '日'] as const;
+const WEEK_HEAD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+
+/** 月份缩写，索引与 Date.getMonth() 对齐。 */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
 
 /** 分钟档位：与提醒的最短间隔一致，避免选出提醒策略分辨不出的时刻。 */
 const MINUTE_STEP = 5;
@@ -91,23 +94,23 @@ function makeButton(className: string, text?: string): HTMLButtonElement {
 
 /** 建整个选择器的 DOM（尚未挂进文档）。 */
 function buildPickerDom(): PickerDom {
-  const el = makeButton('dsh-pet-todo-due', '无期限');
+  const el = makeButton('dsh-pet-todo-due', 'No due date');
   el.setAttribute('aria-haspopup', 'dialog');
   el.setAttribute('aria-expanded', 'false');
-  el.setAttribute('aria-label', '提醒时间（可选）');
+  el.setAttribute('aria-label', 'Reminder time (optional)');
 
   const calendar = make('div', 'dsh-pet-todo-cal');
   calendar.setAttribute('role', 'dialog');
-  calendar.setAttribute('aria-label', '选择提醒时间');
+  calendar.setAttribute('aria-label', 'Pick reminder time');
 
   const head = make('div', 'dsh-pet-todo-cal-head');
   const prev = makeButton('dsh-pet-todo-cal-nav', '‹');
   prev.dataset.act = 'prev';
-  prev.setAttribute('aria-label', '上个月');
+  prev.setAttribute('aria-label', 'Previous month');
   const title = make('span', 'dsh-pet-todo-cal-title');
   const next = makeButton('dsh-pet-todo-cal-nav', '›');
   next.dataset.act = 'next';
-  next.setAttribute('aria-label', '下个月');
+  next.setAttribute('aria-label', 'Next month');
   head.append(prev, title, next);
 
   const week = make('div', 'dsh-pet-todo-cal-week');
@@ -119,20 +122,20 @@ function buildPickerDom(): PickerDom {
   const grid = make('div', 'dsh-pet-todo-cal-grid');
 
   const foot = make('div', 'dsh-pet-todo-cal-foot');
-  const today = makeButton('dsh-pet-todo-cal-act', '今天');
+  const today = makeButton('dsh-pet-todo-cal-act', 'Today');
   today.dataset.act = 'today';
-  const clear = makeButton('dsh-pet-todo-cal-act', '清除');
+  const clear = makeButton('dsh-pet-todo-cal-act', 'Clear');
   clear.dataset.act = 'clear';
   const grow = make('span', 'dsh-pet-todo-cal-grow');
   const hourChip = makeButton('dsh-pet-todo-cal-chip', '09');
   hourChip.dataset.act = 'hour';
-  hourChip.setAttribute('aria-label', '选择小时');
+  hourChip.setAttribute('aria-label', 'Pick hour');
   const colon = make('span', 'dsh-pet-todo-cal-colon');
   colon.textContent = ':';
   const minuteChip = makeButton('dsh-pet-todo-cal-chip', '00');
   minuteChip.dataset.act = 'minute';
-  minuteChip.setAttribute('aria-label', '选择分钟');
-  const done = makeButton('dsh-pet-todo-cal-act', '完成');
+  minuteChip.setAttribute('aria-label', 'Pick minute');
+  const done = makeButton('dsh-pet-todo-cal-act', 'Done');
   done.dataset.act = 'done';
   foot.append(today, clear, grow, hourChip, colon, minuteChip, done);
 
@@ -169,7 +172,7 @@ function renderDays(dom: PickerDom, state: PickerState): void {
     button.classList.toggle('is-out', cell.out);
     button.classList.toggle('is-today', sameDay(today, date));
     button.dataset.ts = String(date.getTime());
-    button.setAttribute('aria-label', `${date.getMonth() + 1}月${date.getDate()}日`);
+    button.setAttribute('aria-label', `${MONTHS[date.getMonth()]} ${date.getDate()}`);
     dom.grid.appendChild(button);
   }
 }
@@ -182,7 +185,7 @@ function renderNumbers(dom: PickerDom, state: PickerState): void {
   for (let value = 0; value < count; value += step) {
     const button = cellButton(pad2(value), (isHour ? state.hour : state.minute) === value);
     button.dataset.num = String(value);
-    button.setAttribute('aria-label', `${value} ${isHour ? '时' : '分'}`);
+    button.setAttribute('aria-label', `${value} ${isHour ? 'h' : 'min'}`);
     dom.grid.appendChild(button);
   }
 }
@@ -190,7 +193,7 @@ function renderNumbers(dom: PickerDom, state: PickerState): void {
 /** 同步按钮文案、时分标签与当前网格的标题。 */
 function syncPicker(dom: PickerDom, state: PickerState): void {
   const ms = dueMs(state);
-  dom.el.textContent = ms === null ? '无期限' : dueLabel(ms, Date.now());
+  dom.el.textContent = ms === null ? 'No due date' : dueLabel(ms, Date.now());
   dom.el.classList.toggle('is-set', ms !== null);
   dom.hourChip.textContent = pad2(state.hour);
   dom.minuteChip.textContent = pad2(state.minute);
@@ -202,10 +205,10 @@ function syncPicker(dom: PickerDom, state: PickerState): void {
 function renderPicker(dom: PickerDom, state: PickerState): void {
   const day = state.mode === 'day';
   dom.title.textContent = day
-    ? `${state.view.getFullYear()}年${state.view.getMonth() + 1}月`
+    ? `${MONTHS[state.view.getMonth()]} ${state.view.getFullYear()}`
     : state.mode === 'hour'
-      ? '选择小时'
-      : '选择分钟';
+      ? 'Pick hour'
+      : 'Pick minute';
   dom.prev.hidden = !day;
   dom.next.hidden = !day;
   dom.grid.className = 'dsh-pet-todo-cal-grid is-' + state.mode;

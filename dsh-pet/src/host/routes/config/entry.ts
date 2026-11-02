@@ -18,7 +18,7 @@ const MAIN_ENTRY = 'main';
 
 /** 实例数组非法时的统一文案：saveUserConfig 只回 null，细节必须在这里讲清。 */
 const INVALID_PETS =
-  'pets 非法：必须是该种类的全部实例（至少 1 只），每只 id 唯一，size / balanceEnabled / display / position 齐全合法';
+  'Invalid pets: must be every instance of this kind (at least 1), each with a unique id and with size / balanceEnabled / display / position all present and valid';
 
 /**
  * 找出与其它条目冲突的实例 id。
@@ -43,7 +43,7 @@ function conflictingIds(deps: PetRouteDeps, entry: string, pets: readonly Record
   for (const pet of pets) {
     const id = String(pet.id);
     const owner = taken.get(id);
-    if (owner !== undefined) out.push(`${id}（已被「${owner}」占用）`);
+    if (owner !== undefined) out.push(`${id} (already taken by "${owner}")`);
   }
   return out;
 }
@@ -67,14 +67,19 @@ export async function savePetLayer(deps: PetRouteDeps, input: RouteInput): Promi
     return invalidJson();
   }
   const entry = typeof payload.entry === 'string' ? payload.entry.trim() : '';
-  if (!entry) return failResult('bad-request', 'entry 必填：要写哪个种类（pet/<名>-config.json 的文件名前缀）');
+  if (!entry)
+    return failResult(
+      'bad-request',
+      'entry is required: which kind to write (the filename prefix of pet/<name>-config.json)',
+    );
   // 先挡非法字符再查文件：entry 会被拼成路径片段，不能让配置值逃出 pet/ 目录。
-  if (!isValidPetId(entry)) return failResult('bad-request', `entry 不能当路径片段用：${entry}`);
-  if (entry === MAIN_ENTRY) return failResult('bad-request', 'main 条目请用 PUT /config：它还要带全局字段');
+  if (!isValidPetId(entry)) return failResult('bad-request', `entry cannot be used as a path segment: ${entry}`);
+  if (entry === MAIN_ENTRY)
+    return failResult('bad-request', 'Use PUT /config for the main entry: it also carries global fields');
   const pets = payload.pets;
   if (!Array.isArray(pets) || pets.length === 0) return failResult('bad-request', INVALID_PETS);
   const resolved = resolveConfigLayer(deps, entry);
-  if (!resolved.ok) return failResult('unknown-entry', `没有这个种类：${entry}`);
+  if (!resolved.ok) return failResult('unknown-entry', `No such kind: ${entry}`);
   const layer = resolved.layer;
   // 整段替换语义：白名单重建的是整个 pets 数组，漏传一只就等于把它删掉。
   const clean = saveUserConfig({ pets }, layer.existing);
@@ -86,7 +91,8 @@ export async function savePetLayer(deps: PetRouteDeps, input: RouteInput): Promi
   } catch (e) {
     return failResult('generate-error', e instanceof Error ? e.message : String(e));
   }
-  if (conflicts.length > 0) return failResult('bad-request', '宠物 id 与其它种类冲突：' + conflicts.join('、'));
+  if (conflicts.length > 0)
+    return failResult('bad-request', 'Pet ids conflict with other kinds: ' + conflicts.join(', '));
   try {
     await mkdir(layer.dir, { recursive: true });
     await writeFile(layer.path, JSON.stringify(clean, null, 2), 'utf8');

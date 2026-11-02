@@ -16,8 +16,8 @@ import type { ShapeHandler } from './shape.ts';
  * 滚动窗的时长是服务商自己的业务事实（如 5 小时），不走这张表，见 DEFAULT_ROLLING_LABEL。
  */
 export const WINDOW_LABELS = {
-  weekly: '周',
-  monthly: '月',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
 } as const;
 
 /**
@@ -86,17 +86,17 @@ export function urgentWindow(v: BalanceView): WindowUsage | undefined {
 /**
  * 把重置时间转成一句相对文案，保留一位小数。
  *
- * 四天及以上报「N.x 天」，不足四天报「N.x 小时」；已过重置点报「已重置」，时间未知返回空串。
+ * 四天及以上报「N.x 天」，不足四天报「N.x 小时」；已过重置点报「Reset」，时间未知返回空串。
  */
 export function resetInText(iso?: string): string {
   if (!iso) return '';
   const t = new Date(iso).getTime();
   if (!Number.isFinite(t)) return '';
   const delta = t - Date.now();
-  if (delta <= 0) return '已重置';
+  if (delta <= 0) return 'Reset';
   const hoursF = delta / 3_600_000;
-  if (hoursF >= 96) return (Math.round((hoursF / 24) * 10) / 10).toFixed(1) + ' 天';
-  return Math.max(0.1, Math.round(hoursF * 10) / 10).toFixed(1) + ' 小时';
+  if (hoursF >= 96) return (Math.round((hoursF / 24) * 10) / 10).toFixed(1) + ' d';
+  return Math.max(0.1, Math.round(hoursF * 10) / 10).toFixed(1) + ' h';
 }
 
 /** 三窗口取最大值，只有月窗口时就是它本身 */
@@ -104,19 +104,19 @@ function windowsPercent(v: BalanceView): number | undefined {
   return Math.max(v.rolling ?? 0, v.weekly ?? 0, v.monthly ?? 0);
 }
 
-/** 把 resetInText 的三种返回翻成一句提示：空串 = 时间未知，'已重置' = 已经过点，其余 = 倒计时。 */
+/** 把 resetInText 的三种返回翻成一句提示：空串 = 时间未知，'Reset' = 已经过点，其余 = 倒计时。 */
 function resetPhrase(reset: string): string {
-  if (reset === '') return '重置时间未知';
-  return reset === '已重置' ? reset : reset + '重置';
+  if (reset === '') return 'Reset time unknown';
+  return reset === 'Reset' ? reset : 'Resets in ' + reset;
 }
 
 /** 两行：最紧迫窗口的已用百分比与重置倒计时 */
 function windowsRows(v: BalanceView): BalanceBubbleRow[] {
   const w = urgentWindow(v);
-  if (!w) return [{ role: 'label', text: '额度数据不可用' }];
+  if (!w) return [{ role: 'label', text: 'Quota data unavailable' }];
   const reset = resetInText(w.resetsAt);
   return [
-    { role: 'label', text: w.label + '额度已用 ' + Math.round(w.percent) + '%' },
+    { role: 'label', text: w.label + ' used ' + Math.round(w.percent) + '%' },
     { role: 'sub', text: resetPhrase(reset) },
   ];
 }
@@ -171,9 +171,9 @@ function windowsUsage(v: BalanceView): BalanceBubbleRow[] | undefined {
   const u = v.usage;
   if (!u) return undefined;
   const total = compactCount(u.totalTokens);
-  const input = compactCount(u.inputTokens) + ' 入';
-  const output = compactCount(u.outputTokens) + ' 出';
-  const period = '本期 ' + u.requests + ' 次';
+  const input = compactCount(u.inputTokens) + ' in';
+  const output = compactCount(u.outputTokens) + ' out';
+  const period = 'This period: ' + u.requests + ' reqs';
   const spend = '$' + u.spentUsd.toFixed(2);
   // 比例条用真实占比：输入通常占绝对多数，条看起来几乎单色是事实，不做最小宽度放大。
   const sum = u.inputTokens + u.outputTokens;

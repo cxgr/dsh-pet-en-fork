@@ -19,12 +19,18 @@ const clockOf = (date: Date): string =>
 /** 本地日界的时间戳（当天 00:00）。 */
 const startOfDay = (date: Date): number => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 
+/** 同年消息的日期：`Nov 3`。 */
+const MONTH_DAY = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+
+/** 跨年消息的日期：`Nov 3, 2026`。 */
+const MONTH_DAY_YEAR = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
 /**
  * 时间戳 → 展示文本。
  *
  * @param ts - 消息时间戳（毫秒）；非正数视为没有时间。
  * @param now - 当前时刻（毫秒），由调用方注入。
- * @returns 今天 `HH:mm:ss`；昨天 `昨天 HH:mm:ss`；同年 `M月D日 HH:mm:ss`；跨年 `YYYY年M月D日 HH:mm:ss`。
+ * @returns 今天 `HH:mm:ss`；昨天 `Yesterday HH:mm:ss`；同年 `Nov 3 HH:mm:ss`；跨年 `Nov 3, 2026 HH:mm:ss`。
  */
 export function formatStamp(ts: number, now: number): string {
   if (!Number.isFinite(ts) || ts <= 0) return '';
@@ -33,8 +39,7 @@ export function formatStamp(ts: number, now: number): string {
   const days = Math.round((startOfDay(today) - startOfDay(date)) / DAY_MS);
   const clock = clockOf(date);
   if (days <= 0) return clock; // 今天（以及时钟偏差导致的「未来」都按今天处理）
-  if (days === 1) return '昨天 ' + clock;
-  const monthDay = date.getMonth() + 1 + '月' + date.getDate() + '日';
-  if (date.getFullYear() === today.getFullYear()) return monthDay + ' ' + clock;
-  return date.getFullYear() + '年' + monthDay + ' ' + clock;
+  if (days === 1) return 'Yesterday ' + clock;
+  if (date.getFullYear() === today.getFullYear()) return MONTH_DAY.format(date) + ' ' + clock;
+  return MONTH_DAY_YEAR.format(date) + ' ' + clock;
 }

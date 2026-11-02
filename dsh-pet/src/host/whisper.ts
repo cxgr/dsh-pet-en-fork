@@ -25,10 +25,11 @@ export type WhisperGenerateResult =
 const TIMEOUT_MS = 30_000;
 
 /** 碎碎念指令：纯文本（没有配图时的原样请求）。 */
-const USER_TEXT = '随便说一句日常碎碎念，一句就好，20 字以内。';
+const USER_TEXT = 'Mutter a casual everyday whisper, just one sentence, 20 words max.';
 
 /** 梦话指令：睡觉期间嘟囔一句。与碎碎念指令同属「功能指令」，不进配置（配置里只有人设）。 */
-const SLEEP_TALK_TEXT = '你正在睡觉，随便嘟囔一句梦话，一句就好，20 字以内；含糊、半梦半醒，不要清醒地回应任何人。';
+const SLEEP_TALK_TEXT =
+  'You are asleep. Mumble a bit of dream talk, just one sentence, 20 words max; keep it vague and half-awake, and do not respond to anyone while awake.';
 
 /** 梦话指令的对外出口：调用方传进 generateWhisper 的 instruction，避免再抄一份文案。 */
 export const SLEEP_TALK_INSTRUCTION = SLEEP_TALK_TEXT;
@@ -42,13 +43,13 @@ export const SLEEP_TALK_INSTRUCTION = SLEEP_TALK_TEXT;
  */
 function userTextWithMeme(meme: { name: string; desc: string }): string {
   return (
-    '随便说一句日常碎碎念，一句就好，20 字以内。\n' +
-    '这次会配一张表情包一起显示，图的内容是：' +
+    'Mutter a casual everyday whisper, just one sentence, 20 words max.\n' +
+    'This time a meme will be shown alongside it; the image is: ' +
     meme.name +
-    '（' +
+    ' (' +
     meme.desc +
-    '）。\n' +
-    '请让这句话和这张图的情绪/场景自然契合，像是配合画面说出来的；不要描述画面本身。'
+    ').\n' +
+    'Make the sentence fit the mood/scene of the image naturally, as if said along with the picture; do not describe the picture itself.'
   );
 }
 
@@ -77,12 +78,12 @@ export async function generateWhisper(
   // 候选链：配置的模型优先 → 当前对话的模型兜底（whisperModel 留空时链上只有后者）
   const candidates = modelCandidates(ctx, request.preferred);
   if (candidates.length === 0) {
-    return { ok: false, reason: 'provider-missing', message: '当前对话未配置模型' };
+    return { ok: false, reason: 'provider-missing', message: 'No model configured for the current chat' };
   }
   // ctx.llm 是核心服务但保持防御：缺失时显式失败（静默跳过由上层决定）
   const llm = (ctx as { llm?: { stream(o: unknown): AsyncIterable<unknown> } }).llm;
   if (!llm || typeof llm.stream !== 'function') {
-    return { ok: false, reason: 'generate-error', message: 'LLM 服务不可用' };
+    return { ok: false, reason: 'generate-error', message: 'LLM service unavailable' };
   }
   // 依次尝试：配置的模型失败（凭据被删 / 模型下架 / 该服务商没配 key）时回落到当前对话的模型
   // 重试一次——那才是用户当前真正在用的模型，报错更有意义。

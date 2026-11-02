@@ -123,7 +123,7 @@ describe('POST /chat 的 attachment', () => {
       ),
     );
     assert.equal(body.reason, 'bad-request');
-    assert.match(String(body.message), /不支持图片/);
+    assert.match(String(body.message), /does not support images/);
     assert.equal(calls.length, 0);
   });
 
@@ -137,7 +137,7 @@ describe('POST /chat 的 attachment', () => {
       ),
     );
     assert.equal(body.reason, 'bad-request');
-    assert.match(String(body.message), /图片过大/);
+    assert.match(String(body.message), /Image too large/);
     assert.equal(saved.length, 0);
     assert.equal(calls.length, 0);
   });

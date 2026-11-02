@@ -29,11 +29,11 @@ export function registerChatCommand(deps: CommandChatInput): void {
     () =>
       ctx.commands.register({
         name: 'chat',
-        description: '与桌宠对话：留空 = 碎碎念一句；输入消息 = 正常对话',
-        input: { hint: '[消息]（留空 = 碎碎念）' },
+        description: 'Chat with the pet: leave empty = one whisper; type a message = normal chat',
+        input: { hint: '[message] (empty = whisper)' },
         handler: ({ rawInput }: { rawInput: string }) => {
           const petId = resolveActivePetId();
-          if (!petId) return { kind: 'error', text: '没有可交互的桌宠' };
+          if (!petId) return { kind: 'error', text: 'No pet to interact with' };
           // 睡觉：命令也是「手动打扰」，回拒绝台词而不是叫模型（省一次调用，也符合睡着不说话的设定）
           if (sleep.sleeping(petId)) return { kind: 'error', text: sleepRefusalText(petId) };
           const text = rawInput.trim();
@@ -41,9 +41,9 @@ export function registerChatCommand(deps: CommandChatInput): void {
             void publishWhisper(petId).catch((e: unknown) =>
               log.warn('[dsh-pet] 碎碎念异常：' + (e instanceof Error ? e.message : String(e))),
             );
-            return { kind: 'success', text: '已让桌宠碎碎念一句' };
+            return { kind: 'success', text: 'Asked the pet for a whisper' };
           }
-          if (text.length > 2000) return { kind: 'error', text: '消息过长（限 2000 字）' };
+          if (text.length > 2000) return { kind: 'error', text: 'Message too long (2000 character limit)' };
           void chatWithPet(petId, text)
             .then((r) => {
               if (!r.ok) {
@@ -53,7 +53,7 @@ export function registerChatCommand(deps: CommandChatInput): void {
             // 生成链自己会把业务失败变成 ok:false，走到这里的是真异常（写盘/读配置抛）：
             // 不接住就是 unhandled rejection，Node 默认终止宿主进程。
             .catch((e: unknown) => log.warn('[dsh-pet] 对话异常：' + (e instanceof Error ? e.message : String(e))));
-          return { kind: 'success', text: '已发送，桌宠马上回应' };
+          return { kind: 'success', text: 'Sent, the pet will reply shortly' };
         },
       }),
     'dsh-pet: /chat command',

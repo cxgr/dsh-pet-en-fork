@@ -61,18 +61,19 @@ export function parseCommandCode(
 ): BalanceSuccess {
   const root = obj(creditsBody);
   const credits = obj(root?.credits);
-  if (!credits) throw new Error('dsh-pet: commandcode 响应缺少 credits');
+  if (!credits) throw new Error('dsh-pet: commandcode response has no credits');
 
   // 三个额度字段全缺即认不出响应形态：宁可报错，也不把分母当 0 算出「已用 100%」。
   const creditFields = [credits.monthlyCredits, credits.purchasedCredits, credits.freeCredits];
   if (creditFields.every((v) => looseNum(v) === undefined)) {
-    throw new Error('dsh-pet: commandcode credits 响应缺少额度字段');
+    throw new Error('dsh-pet: commandcode credits response has no quota field');
   }
   const remaining = creditFields.reduce<number>((sum, v) => sum + Math.max(0, looseNum(v) ?? 0), 0);
 
   const summary = obj(summaryBody);
   const spentRaw = summary?.totalCost;
-  if (spentRaw === undefined || spentRaw === null) throw new Error('dsh-pet: commandcode usage 响应缺少 totalCost');
+  if (spentRaw === undefined || spentRaw === null)
+    throw new Error('dsh-pet: commandcode usage response has no totalCost');
   const spent = Math.max(0, num(spentRaw, 'totalCost'));
 
   const pool = spent + remaining;

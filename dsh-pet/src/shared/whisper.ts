@@ -20,8 +20,8 @@ export function whisperBubbleView(state: WhisperState): WhisperBubbleRow[] {
   if (state.ok) return [{ role: 'label', text: state.text }];
   const msg =
     state.reason === 'provider-missing'
-      ? '当前对话未配置模型，碎碎念不可用'
-      : '碎碎念生成失败' + (state.message ? '：' + state.message : '');
+      ? 'No model configured for the current chat, whisper unavailable'
+      : 'Whisper generation failed' + (state.message ? ': ' + state.message : '');
   return [{ role: 'label', text: msg }];
 }
 

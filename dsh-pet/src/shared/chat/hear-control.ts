@@ -79,8 +79,8 @@ export function createHearControl(opts: HearControlOptions): HearControl {
 
   /** 现在录不了的原因；能录时给空串。 */
   const blockedReason = (): string => {
-    if (!canRecord()) return '当前地址不支持录音：用 https 或 localhost 打开才有麦克风';
-    if (hearUrl === '') return '这个入口没有接上识别地址';
+    if (!canRecord()) return 'Recording needs https or localhost';
+    if (hearUrl === '') return 'Speech recognition is not available here';
     return '';
   };
 
@@ -98,10 +98,10 @@ export function createHearControl(opts: HearControlOptions): HearControl {
 
   /** 失败原因翻成人话；宿主给的 message 有就附上，方便对着日志排查。 */
   const describeFailure = (outcome: Extract<HearOutcome, { ok: false }>): string => {
-    if (outcome.reason === 'unsupported') return '这个宿主没开语音识别';
-    if (outcome.reason === 'bad-request') return '音频没通过宿主校验';
-    if (outcome.reason === 'network') return '识别请求失败：' + outcome.message;
-    return '识别失败：' + (outcome.message || '未知原因');
+    if (outcome.reason === 'unsupported') return 'This host has speech recognition turned off';
+    if (outcome.reason === 'bad-request') return 'The host rejected the audio';
+    if (outcome.reason === 'network') return 'Recognition request failed: ' + outcome.message;
+    return 'Recognition failed: ' + (outcome.message || 'unknown reason');
   };
 
   /** 收尾：停采集 → 判误触 → 判静音 → 送宿主 → 文字落进输入框。失败只提示，不动已输入的文字。 */
@@ -121,16 +121,16 @@ export function createHearControl(opts: HearControlOptions): HearControl {
     }
     hearState = 'transcribing';
     paint();
-    hint.show('识别中…');
+    hint.show('Transcribing…');
     try {
       const clip = await current.stop();
       if (clip === null) {
-        hint.flash('没录到声音');
+        hint.flash('No audio recorded');
         return;
       }
       if (clip.peak < SILENCE_PEAK) {
         // 麦克风开着却没信号（设备静音 / 耳机没戴上）：不白送一次识别
-        hint.flash('没听到声音，检查一下麦克风');
+        hint.flash("Didn't hear anything, check your microphone");
         return;
       }
       if (!input.isConnected) return; // 等结果的这会儿弹窗被关了
@@ -142,13 +142,13 @@ export function createHearControl(opts: HearControlOptions): HearControl {
       }
       const text = outcome.text.trim();
       if (text === '') {
-        hint.flash('没听清，再说一次');
+        hint.flash("Couldn't make that out, say it again");
         return;
       }
       hint.hide();
       insertText(text);
     } catch (e) {
-      hint.flash('录音出错：' + (e instanceof Error ? e.message : String(e)));
+      hint.flash('Recording error: ' + (e instanceof Error ? e.message : String(e)));
     } finally {
       hearState = 'idle';
       paint();
@@ -169,13 +169,13 @@ export function createHearControl(opts: HearControlOptions): HearControl {
     hearState = 'starting';
     wasReleasedEarly = false;
     paint();
-    hint.show('正在打开麦克风…');
+    hint.show('Opening microphone…');
     try {
       recorder = await startRecording();
     } catch (e) {
       hearState = 'idle';
       paint();
-      hint.flash('打不开麦克风：' + (e instanceof Error ? e.message : String(e)));
+      hint.flash("Couldn't open the microphone: " + (e instanceof Error ? e.message : String(e)));
       return;
     }
     if (wasReleasedEarly) {
@@ -192,7 +192,9 @@ export function createHearControl(opts: HearControlOptions): HearControl {
         return;
       }
       const total = Math.floor(rec.elapsedMs() / 1000);
-      hint.show('录音中 ' + Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0') + ' · 松开结束');
+      hint.show(
+        'Recording ' + Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0') + ' · release to stop',
+      );
     }, 200);
   };
 

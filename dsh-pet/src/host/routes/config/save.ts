@@ -47,14 +47,14 @@ async function saveUserLayer(deps: PetRouteDeps, input: RouteInput): Promise<Rou
     if (!clean) {
       return failResult(
         'bad-request',
-        'invalid pet config: expected { pets:[{name?,id,size,sizePercent?,balanceEnabled,display,position:{corner,marginX,marginY}}] }（id 为非空字符串且去除首尾空白后唯一；sizePercent 可选，不小于 1 的数字；display 为 web/desktop/both/none 之一；可选顶层 notificationsEnabled / whisperImageEnabled / chatImageEnabled / chatAnimationEnabled / trayEnabled 布尔；可选宠物布尔 whisperEnabled / workStatusEnabled / fixedEnabled）',
+        'invalid pet config: expected { pets:[{name?,id,size,sizePercent?,balanceEnabled,display,position:{corner,marginX,marginY}}] } (id is a non-empty string, unique after trimming; sizePercent is optional and must be a number not less than 1; display is one of web/desktop/both/none; optional top-level booleans notificationsEnabled / whisperImageEnabled / chatImageEnabled / chatAnimationEnabled / trayEnabled; optional per-pet booleans whisperEnabled / workStatusEnabled / fixedEnabled)',
       );
     }
     // 损坏预检：用户层存在但连 JSONC 都解析不了（真损坏）→ 先不写盘。
     // 保存是白名单重建，existing 读不出来就等于把文件里剩下的内容整份丢掉，而且静默——
     // 所以回 needConfirm 让设置页弹窗（取消 = 不动文件；确认 = 带 ?force=1 强行重建）。
     if (input.url.searchParams.get('force') !== '1' && userConfigUnparsable(configPaths)) {
-      return failResult('user-config-unparsable', '用户配置无法解析，需确认后重建', {
+      return failResult('user-config-unparsable', 'The user config cannot be parsed; confirm before rebuilding it', {
         needConfirm: true,
         userFile: userConfigPath,
       });

@@ -136,7 +136,10 @@ export function createMenuActions(deps: MenuActionDeps): MenuActions {
       // 睡觉/起来都由宿主定状态：渲染端只发意图，三段动画名与闸门都在宿主那一侧
       const route = leaf.action === 'sleep' ? '/sleep' : '/wake';
       console.info('[dsh-pet] 菜单' + (leaf.action === 'sleep' ? '睡觉' : '起来') + ' pet=' + petId);
-      fireAction(ROUTE_PATH + route + '?pet=' + encodeURIComponent(petId), leaf.action === 'sleep' ? '睡觉' : '起来');
+      fireAction(
+        ROUTE_PATH + route + '?pet=' + encodeURIComponent(petId),
+        leaf.action === 'sleep' ? 'Sleep' : 'Wake up',
+      );
       return;
     }
     if (leaf.action === 'show-balance') {

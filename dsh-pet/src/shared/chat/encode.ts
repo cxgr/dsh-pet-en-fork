@@ -56,16 +56,16 @@ export interface EncodedImage {
 export function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error('这个文件读不出来'));
+    reader.onerror = () => reject(new Error("Couldn't read this file"));
     reader.onload = () => {
       const url = typeof reader.result === 'string' ? reader.result : '';
       if (!url) {
-        reject(new Error('这个文件读不出来'));
+        reject(new Error("Couldn't read this file"));
         return;
       }
       const img = new Image();
       img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('这个文件解不出图片'));
+      img.onerror = () => reject(new Error("Couldn't decode this file as an image"));
       img.src = url;
     };
     reader.readAsDataURL(file);
@@ -119,7 +119,7 @@ export function encodeCanvas(canvas: HTMLCanvasElement): EncodedImage {
       return { base64, mediaType: 'image/jpeg', bytes, width, height, resized: true, previewUrl };
     }
   }
-  throw new Error('无法压到预算内');
+  throw new Error("Couldn't compress under the size budget");
 }
 
 /**
@@ -133,7 +133,7 @@ export function encodeCanvas(canvas: HTMLCanvasElement): EncodedImage {
  */
 export async function encodeImageFile(file: File): Promise<EncodedImage> {
   const mediaType = imageMediaTypeOf(file);
-  if (!mediaType) throw new Error('不是可发送的图片');
+  if (!mediaType) throw new Error('Not a sendable image');
   const img = await loadImage(file);
   const width = img.naturalWidth || img.width;
   const height = img.naturalHeight || img.height;

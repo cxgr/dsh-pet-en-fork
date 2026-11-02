@@ -11,7 +11,7 @@ Object.assign(PetSprite.prototype, {
   initPlayback(pet) {
     // 动画池与权重由拍平层按条目注入（renderer 的 S.flattenConfigPets），条目缺 animations 就是配置不全：
     // 明确报错交给 boot 的红条与 5s 重试，绝不回落到没有定义的全局（那只会变成一句 ReferenceError）。
-    if (!pet.animations) throw new Error('宠物缺少 animations 段：' + String(pet.id ?? ''));
+    if (!pet.animations) throw new Error('Pet is missing its animations section: ' + String(pet.id ?? ''));
     this.animations = pet.animations;
     this.weights = pet.animationWeights;
     this.front = 0; // 0 = A, 1 = B

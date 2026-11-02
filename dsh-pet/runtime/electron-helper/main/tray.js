@@ -124,7 +124,7 @@ function createTray({
         checked: isDesktopDisplay(pet.display),
         click: () => traySetPetDisplay(pet.id, toggleDisplay(pet.display)),
       })),
-      ...(canQuit ? [{ type: 'separator' }, { label: '退出', click: quitApp }] : []),
+      ...(canQuit ? [{ type: 'separator' }, { label: 'Quit', click: quitApp }] : []),
     ]);
   }
 
@@ -141,7 +141,7 @@ function createTray({
       const menu = await buildMenu();
       if (menu === null) return;
       tray = new Tray(trayIcon());
-      tray.setToolTip('dsh-pet 桌面宠物');
+      tray.setToolTip('dsh-pet desktop pet');
       tray.setContextMenu(menu);
       // Windows 上 setContextMenu 只接管右键，左键默认什么都不做（macOS 相反：左键即弹菜单）
       if (platform.leftClickPopsMenu) tray.on('click', () => tray.popUpContextMenu());

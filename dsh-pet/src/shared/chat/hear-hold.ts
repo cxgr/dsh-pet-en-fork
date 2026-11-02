@@ -15,7 +15,7 @@ import type { HotkeyEvent } from '../hotkey.ts';
 const HEAR_KEY = 'm';
 
 /** 快捷键的显示文案（设置页用）。与 {@link isHearHotkey} 的按键保持同一份事实。 */
-export const HEAR_HOTKEY_HINT = 'M 键';
+export const HEAR_HOTKEY_HINT = 'M';
 
 /**
  * 这次按下该不该被「按住说话」接走：与其他悬停键共用同一条判据。

@@ -12,7 +12,7 @@
 function showError(message) {
   console.error('[dsh-pet] ' + message);
   window.__dshPetDebug.configOk = false;
-  errorEl.textContent = 'dsh-pet 配置错误：' + message;
+  errorEl.textContent = 'dsh-pet config error: ' + message;
   errorEl.classList.add('visible');
 }
 function hideError() {
@@ -86,7 +86,13 @@ async function boot() {
     // 本窗口只承载一只宠物：petIndex 由主进程按 DSH_PET_PETS 顺序注入
     const pet = pets[CONFIG.petIndex];
     if (!pet) {
-      showError('petIndex=' + CONFIG.petIndex + ' 超出桌面宠物列表（共 ' + pets.length + ' 只），本窗口不创建宠物');
+      showError(
+        'petIndex=' +
+          CONFIG.petIndex +
+          ' is out of range for the desktop pet list (' +
+          pets.length +
+          ' pets); this window will not create a pet',
+      );
       scheduleReboot();
       return;
     }
@@ -97,7 +103,7 @@ async function boot() {
     for (const s of sprites) s.playIdle();
     startLoops();
   } catch (e) {
-    const msg = '配置加载失败：' + (e && e.message ? String(e.message) : String(e));
+    const msg = 'Failed to load config: ' + (e && e.message ? String(e.message) : String(e));
     // 首次失败先静默（多半是启动竞态，见 bootFailures 的说明），下一次 5s 重试仍失败才报。
     bootFailures += 1;
     if (bootFailures > 1) showError(msg);

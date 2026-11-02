@@ -13,7 +13,7 @@ import type { PetDisplay } from './types.ts';
 export const DISPLAY_ORDER = ['web', 'desktop', 'both', 'none'] as const satisfies readonly PetDisplay[];
 
 /** 菜单项右侧的键帽文案；下标与 {@link DISPLAY_ORDER} 对齐。 */
-export const DISPLAY_HOTKEY_HINTS: readonly string[] = DISPLAY_ORDER.map((_, index) => String(index + 1) + ' 键');
+export const DISPLAY_HOTKEY_HINTS: readonly string[] = DISPLAY_ORDER.map((_, index) => String(index + 1));
 
 /**
  * 这次按键该切到哪个显示位置。

@@ -30,9 +30,9 @@ export async function setPetDisplay(deps: PetRouteDeps, input: RouteInput): Prom
   const petId = typeof payload.id === 'string' ? payload.id.trim() : '';
   const nextDisplay = String(payload.display ?? '');
   // id 必填（与 9 条 `?pet=` 路由同一对词汇：没给 → pet-required；不存在 → unknown-pet）
-  if (!petId) return failResult('pet-required', 'pet 必填：要指定操作哪只桌宠');
+  if (!petId) return failResult('pet-required', 'pet is required: say which pet to act on');
   if (!PET_DISPLAY_SET.has(nextDisplay)) {
-    return failResult('bad-request', `display 必须是 web / desktop / both / none：${nextDisplay}`);
+    return failResult('bad-request', `display must be web / desktop / both / none: ${nextDisplay}`);
   }
   let merged: Record<string, Record<string, unknown>>;
   try {
@@ -43,18 +43,18 @@ export async function setPetDisplay(deps: PetRouteDeps, input: RouteInput): Prom
   // 命中不到有两种可能：id 根本不存在，或该实例在合并时因 id 与其它条目重复被跳过（不在聚合里）。
   // 两种都只能按「没有这只桌宠」报——绝不能凭 id 去猜它「应该」属于哪个文件。
   const hit = findPetInstance(merged, petId);
-  if (!hit) return failResult('unknown-pet', `没有这只桌宠：${petId}`);
+  if (!hit) return failResult('unknown-pet', `No such pet: ${petId}`);
   const resolved = resolveConfigLayer(deps, hit.entry);
   // 单只端点把「条目文件找不到」仍报 generate-error：id 在合并里存在、文件却消失，属于安装或 IO
   // 异常，不是调用方参数问题（整条目端点会把它报成 unknown-entry，两者语义不同）。
-  if (!resolved.ok) return failResult('generate-error', `宠物条目配置文件找不到：${hit.entry}`);
+  if (!resolved.ok) return failResult('generate-error', `Pet entry config file not found: ${hit.entry}`);
   const layer = resolved.layer;
   // 整段替换语义：saveUserConfig 重建的是整个 pets 数组，必须带上该层全部宠物，只把目标
   // 那只的 display 换掉（漏掉别的 = 把它们从配置里删掉）。
   const layerPets = Array.isArray(hit.conf.pets) ? (hit.conf.pets as Record<string, unknown>[]) : [];
   const pets = layerPets.map((p) => (String(p.id) === petId ? { ...p, display: nextDisplay } : p));
   const clean = saveUserConfig({ pets }, layer.existing);
-  if (!clean) return failResult('bad-request', '宠物配置非法');
+  if (!clean) return failResult('bad-request', 'Invalid pet config');
   try {
     await mkdir(layer.dir, { recursive: true });
     await writeFile(layer.path, JSON.stringify(clean, null, 2), 'utf8');

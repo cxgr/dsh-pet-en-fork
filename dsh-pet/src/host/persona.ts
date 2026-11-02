@@ -17,7 +17,7 @@ import { timeContextOf } from './time-context.ts';
  * 说成后者时，模型会照着在正文里写时间戳。
  */
 const HISTORY_TIMES_LINE =
-  '【历史】你之前说过的话，前面标着 [月日 时:分]，那是那句话发生的时刻；它只是对话记录里的时间标注，不是你的说话格式。判断“多久以前”“隔了几天”时按它换算，别把隔了很久的话当成刚说过的。你的回复直接从正文开始，不要写时间、不要加方括号前缀。';
+  '[History] Things you said earlier are prefixed with [month day hour:minute], which is the moment that sentence happened; it is only a time annotation in the chat record, not your speaking format. Use it to work out "how long ago" and "how many days apart", and do not treat a long-past message as something just said. Start your reply directly with the body text: do not write a time and do not add a bracketed prefix.';
 
 /**
  * 某宠物最终生效的人设正文（不含名字与时间）：实例 whisperPrompt → 条目 whisperPrompt → 空串。
@@ -55,7 +55,7 @@ export interface SystemPromptParts {
  */
 export function composeSystemPrompt(parts: SystemPromptParts): string {
   const name = String(parts.name || parts.id);
-  const nameLine = name ? '你的名字是“' + name + '”。' : '';
+  const nameLine = name ? 'Your name is "' + name + '".' : '';
   const lines = [parts.prompt, nameLine].filter((line) => line !== '');
   const time = timeContextOf(parts.now);
   if (time) {

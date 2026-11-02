@@ -166,7 +166,7 @@ export async function requestNotificationPermission(): Promise<PermissionResult>
     if (p === 'granted') return { ok: true };
     if (p === 'denied') return { ok: false, reason: 'rejected' };
     // 弹窗被直接关掉 / 未选择：浏览器仍是 default。
-    return { ok: false, reason: 'error', message: '权限未授予（' + p + '）' };
+    return { ok: false, reason: 'error', message: 'Permission not granted (' + p + ')' };
   } catch (e) {
     return { ok: false, reason: 'error', message: e instanceof Error ? e.message : String(e) };
   }

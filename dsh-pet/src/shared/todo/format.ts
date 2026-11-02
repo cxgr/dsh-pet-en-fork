@@ -15,7 +15,10 @@ const DAY_MS = 24 * HOUR_MS;
 export type TodoUrgency = 'overdue' | 'soon' | 'today' | 'later' | 'undated';
 
 /** 星期名，索引与 Date.getDay() 对齐。 */
-const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'] as const;
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+/** 月份缩写，索引与 Date.getMonth() 对齐。 */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
 
 /** 两位补零。 */
 function pad2(value: number): string {
@@ -36,14 +39,14 @@ function dayDiff(target: Date, base: Date): number {
  * 把毫秒差写成人话。
  *
  * @param ms - 时长（非负；负数先取绝对值），不足一分钟按一分钟算。
- * @returns 例如「25分钟」「3小时」「2天」。
+ * @returns 例如「25 min」「3 h」「2 d」。
  */
 export function spanText(ms: number): string {
   const minutes = Math.max(1, Math.round(Math.abs(ms) / MINUTE_MS));
-  if (minutes < 60) return `${minutes}分钟`;
+  if (minutes < 60) return `${minutes} min`;
   const hours = Math.max(1, Math.round(minutes / 60));
-  if (hours < 24) return `${hours}小时`;
-  return `${Math.max(1, Math.round(hours / 24))}天`;
+  if (hours < 24) return `${hours} h`;
+  return `${Math.max(1, Math.round(hours / 24))} d`;
 }
 
 /**
@@ -51,18 +54,18 @@ export function spanText(ms: number): string {
  *
  * @param dueAt - 到期时刻；null 表示没有期限。
  * @param now - 当前时刻。
- * @returns 「今天 18:00」「明天 09:00」「周五 20:00」「11月3日 09:00」「无期限」。
+ * @returns 「Today 18:00」「Tomorrow 09:00」「Fri 20:00」「Nov 3 09:00」「No due date」。
  */
 export function dueLabel(dueAt: number | null, now: number): string {
-  if (dueAt === null) return '无期限';
+  if (dueAt === null) return 'No due date';
   const due = new Date(dueAt);
   const clock = `${pad2(due.getHours())}:${pad2(due.getMinutes())}`;
   const days = dayDiff(due, new Date(now));
-  if (days === 0) return `今天 ${clock}`;
-  if (days === 1) return `明天 ${clock}`;
-  if (days === 2) return `后天 ${clock}`;
+  if (days === 0) return `Today ${clock}`;
+  if (days === 1) return `Tomorrow ${clock}`;
+  if (days === 2) return `In 2 days ${clock}`;
   if (days > 2 && days < 7) return `${WEEKDAYS[due.getDay()]} ${clock}`;
-  return `${due.getMonth() + 1}月${due.getDate()}日 ${clock}`;
+  return `${MONTHS[due.getMonth()]} ${due.getDate()} ${clock}`;
 }
 
 /**
@@ -70,12 +73,12 @@ export function dueLabel(dueAt: number | null, now: number): string {
  *
  * @param dueAt - 到期时刻；null（无期限）时返回空串。
  * @param now - 当前时刻。
- * @returns 「还剩2小时」「已逾期3天」或 `''`。
+ * @returns 「2 h left」「Overdue by 3 d」或 `''`。
  */
 export function remainingLabel(dueAt: number | null, now: number): string {
   if (dueAt === null) return '';
-  if (dueAt <= now) return `已逾期${spanText(now - dueAt)}`;
-  return `还剩${spanText(dueAt - now)}`;
+  if (dueAt <= now) return `Overdue by ${spanText(now - dueAt)}`;
+  return `${spanText(dueAt - now)} left`;
 }
 
 /**
@@ -99,13 +102,13 @@ export function todoUrgency(dueAt: number | null, now: number): TodoUrgency {
  *
  * @param todo - 待办本体。
  * @param now - 当前时刻。
- * @returns 已完成 → 「已完成」/「已完成 · 今天 18:00」；未完成 → 「今天 18:00 · 还剩2小时」。
+ * @returns 已完成 → 「Done」/「Done · Today 18:00」；未完成 → 「Today 18:00 · 2 h left」。
  */
 export function metaLabel(todo: TodoItem, now: number): string {
   if (todo.done) {
-    return todo.dueAt === null ? '已完成' : `已完成 · ${dueLabel(todo.dueAt, now)}`;
+    return todo.dueAt === null ? 'Done' : `Done · ${dueLabel(todo.dueAt, now)}`;
   }
-  if (todo.dueAt === null) return '无期限';
+  if (todo.dueAt === null) return 'No due date';
   const relative = remainingLabel(todo.dueAt, now);
   if (todo.dueAt <= now) return relative;
   return `${dueLabel(todo.dueAt, now)} · ${relative}`;

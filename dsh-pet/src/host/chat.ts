@@ -67,9 +67,9 @@ function historyTextOf(message: ChatMemoryMessage, nowMs: number): string {
  *  交给模型选而不是随机抽：对话有真实上下文（用户输入 + 历史），按语境挑才贴合。 */
 function imageInstruction(pool: MemeEntry[]): string {
   return (
-    '\n\n[配图] 回复结尾可选附一张表情包给用户看，从下列清单里挑最贴合当前语境的：\n' +
+    '\n\n[Image] At the end of your reply you may optionally attach a meme for the user, picking the one that best fits the current context from this list:\n' +
     memeCatalog(pool) +
-    '\n挑中就在回复最后另起一行写 [图:名称]（名称原样照抄）；没有合适的就完全不要写这个标记。'
+    '\nIf you pick one, write [图:名称] on a new line at the end of your reply (copy the name exactly); if nothing fits, do not write this marker at all.'
   );
 }
 
@@ -110,11 +110,11 @@ export async function generateChat(input: ChatGenerateInput): Promise<ChatGenera
   // 候选链：配置的模型优先 → 当前对话的模型兜底（chatModel 留空时链上只有后者）
   const candidates = modelCandidates(ctx, preferred);
   if (candidates.length === 0) {
-    return { ok: false, reason: 'provider-missing', message: '当前对话未配置模型' };
+    return { ok: false, reason: 'provider-missing', message: 'No model configured for the current chat' };
   }
   const llm = (ctx as { llm?: { stream(o: unknown): AsyncIterable<unknown> } }).llm;
   if (!llm || typeof llm.stream !== 'function') {
-    return { ok: false, reason: 'generate-error', message: 'LLM 服务不可用' };
+    return { ok: false, reason: 'generate-error', message: 'LLM service unavailable' };
   }
   // 依次尝试：配置的模型失败（凭据被删 / 模型下架 / 该服务商没配 key）时回落到当前对话的模型
   // 重试一次——那才是用户当前真正在用的模型，报错更有意义。

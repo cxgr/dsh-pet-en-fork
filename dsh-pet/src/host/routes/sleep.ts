@@ -39,12 +39,12 @@ export async function handleSleepRoutes(deps: PetRouteDeps, input: RouteInput): 
 
     // 锁在睡之前：锁 = 第三方接管，并且取锁时已经把它叫醒；占用期间不允许再睡下
     if (lock.locked(who.petId)) {
-      return failResult('locked', '这只桌宠正被占用，不能睡觉');
+      return failResult('locked', 'This pet is currently occupied and cannot sleep');
     }
     // 入睡：整套 + 段内各自随机挑一个；该条目没配睡觉动画时明确拒绝，不静默罚站。
     const names = pickSleepNames(who.conf.animations);
     if (names === null) {
-      return failResult('no-sleep-animations', '这只宠物没有配置睡觉动画（animations.sleep）');
+      return failResult('no-sleep-animations', 'This pet has no sleep animation configured (animations.sleep)');
     }
     // 已经在睡：保持原套（重复调用不该把动画从头放一遍），仍回 ok 让调用方幂等重试
     const changed = sleep.enter(who.petId, names);

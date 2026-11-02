@@ -79,21 +79,21 @@ export function frameToToast(
         // 完成通知的标题就是会话名本身：正文已经在讲「这条回复讲了什么」，
         // 再缀一个「对话完成」只是占位，多会话时反而挤掉了认人的信息。
         return {
-          title: sessionNameOf(sessionTitle) ?? '对话完成',
+          title: sessionNameOf(sessionTitle) ?? 'Chat finished',
           body: text ? truncate(text) : '',
           icon: NOTIFY_ICONS.done,
         };
       }
       if (kind === 'error')
         return {
-          title: composeTitle(sessionTitle, '生成失败'),
+          title: composeTitle(sessionTitle, 'Generation failed'),
           body: ev.data?.reason?.error?.message ?? '',
           icon: NOTIFY_ICONS.error,
         };
       if (kind === 'max-tokens')
         return {
-          title: composeTitle(sessionTitle, '输出被截断'),
-          body: '已达到输出 token 上限',
+          title: composeTitle(sessionTitle, 'Output truncated'),
+          body: 'Reached the output token limit',
           icon: NOTIFY_ICONS.truncated,
         };
       // aborted（用户/父代理取消）、interrupted（崩溃恢复）等：不弹
@@ -103,19 +103,23 @@ export function frameToToast(
       const toolName = typeof frame.toolName === 'string' ? frame.toolName : '';
       const reason = typeof frame.reason === 'string' && frame.reason ? frame.reason : '';
       return {
-        title: composeTitle(sessionTitle, '正在申请权限'),
-        body: (toolName ? '工具「' + toolName + '」' : '') + (reason ? '：' + reason : ''),
+        title: composeTitle(sessionTitle, 'Requesting permission'),
+        body: (toolName ? 'Tool "' + toolName + '"' : '') + (reason ? ': ' + reason : ''),
         icon: NOTIFY_ICONS.approval,
       };
     }
     case 'question/requested': {
       const q =
         (Array.isArray(frame.questions) && (frame.questions as Array<{ question?: string }>)[0]?.question) || '';
-      return { title: composeTitle(sessionTitle, '模型在等你回答'), body: q, icon: NOTIFY_ICONS.question };
+      return {
+        title: composeTitle(sessionTitle, 'Model is waiting for your answer'),
+        body: q,
+        icon: NOTIFY_ICONS.question,
+      };
     }
     case 'host/agent-error': {
       return {
-        title: '生成失败',
+        title: 'Generation failed',
         body: typeof frame.message === 'string' ? (frame.message as string) : '',
         icon: NOTIFY_ICONS.error,
       };

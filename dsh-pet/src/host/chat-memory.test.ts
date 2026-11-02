@@ -368,8 +368,8 @@ describe('createChatMemory —— 提示词注入（配图 / 动作各自独立�
     try {
       await createMemory('在的', ws, ws.memeDir, undefined, captured).chatWithPet('main', '在吗');
       const text = userTextOf(captured[0]);
-      assert.ok(text.includes('[配图]'), '应注入配图指令');
-      assert.ok(text.includes('[动作]'), '应注入动作指令');
+      assert.ok(text.includes('[Image]'), '应注入配图指令');
+      assert.ok(text.includes('[Action]'), '应注入动作指令');
       assert.ok(text.includes('- 可爱：卖萌立绘'), '配图清单要带上描述');
       assert.ok(text.includes('- 优雅女仆舞'), '动作清单要带上名字');
     } finally {

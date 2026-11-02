@@ -38,11 +38,15 @@ async function acceptUpload(deps: PetRouteDeps, input: RouteInput): Promise<Rout
 
   // 参数叫 root 而不是 pet：这里要的是素材根（目录前缀），不是 pets[].id（见 openapi 的 PetIdQuery）。
   const assetRoot = (input.url.searchParams.get('root') ?? '').trim();
-  if (assetRoot === '') return failResult('bad-request', '缺少 root 参数（素材根）');
+  if (assetRoot === '') return failResult('bad-request', 'Missing root parameter (asset root)');
   // 素材根是标识符不是路径片段：含分隔符/保留字符即拒，早于任何路径拼接。
-  if (!isValidPetId(assetRoot)) return failResult('bad-request', '素材根不合法');
+  if (!isValidPetId(assetRoot)) return failResult('bad-request', 'Invalid asset root');
   // pet/ 只归 pet pack：内置条目用插件默认 logo，不接受写入（也不该在 pet/ 里留下 main 的文件）。
-  if (assetRoot === 'main') return failResult('bad-request', '内置条目不能换头像：main 不写入 pet/ 目录');
+  if (assetRoot === 'main')
+    return failResult(
+      'bad-request',
+      'The built-in entry cannot change its avatar: main does not write into the pet/ directory',
+    );
 
   let raw: unknown;
   try {
@@ -51,18 +55,19 @@ async function acceptUpload(deps: PetRouteDeps, input: RouteInput): Promise<Rout
     return invalidJson();
   }
   const base64 = typeof raw === 'object' && raw !== null ? (raw as { base64?: unknown }).base64 : undefined;
-  if (typeof base64 !== 'string' || base64 === '') return failResult('bad-request', 'base64 必须是非空字符串');
+  if (typeof base64 !== 'string' || base64 === '')
+    return failResult('bad-request', 'base64 must be a non-empty string');
 
   // Buffer 解码会静默丢弃非法字符，所以用「重新编码必须与原文一致」确认它是规范 base64。
   const bytes = Buffer.from(base64, 'base64');
-  if (bytes.length === 0 || bytes.toString('base64') !== base64) return failResult('bad-request', 'base64 不合法');
-  if (bytes.length > MAX_AVATAR_BYTES) return payloadTooLarge('头像超过 768 KiB');
+  if (bytes.length === 0 || bytes.toString('base64') !== base64) return failResult('bad-request', 'Invalid base64');
+  if (bytes.length > MAX_AVATAR_BYTES) return payloadTooLarge('Avatar exceeds 768 KiB');
 
   const saved = savePetAvatar(deps.petConfigDir, assetRoot, bytes);
   if (!saved.ok) {
     return saved.reason === 'not-image'
-      ? failResult('unsupported', '只支持 PNG / JPEG / WebP / GIF')
-      : failResult('internal-error', '头像写入失败');
+      ? failResult('unsupported', 'Only PNG / JPEG / WebP / GIF are supported')
+      : failResult('internal-error', 'Failed to write the avatar');
   }
   return okResult({ ok: true });
 }

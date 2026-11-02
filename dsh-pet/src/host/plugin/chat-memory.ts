@@ -141,7 +141,7 @@ export function createChatMemory(deps: ChatMemoryInput) {
     const found = findPetInstance(cfg, petId);
     // 宠物可能在「校验那次读」与这里之间被删（配置随时会变，两次读之间就是窗口）：
     // 明确失败、不生成不写 S——写下去就是一只已不存在宠物的幽灵叶子（常驻到进程重启）。
-    if (!found) return { ok: false, reason: 'unknown-pet', message: '没有这只桌宠：' + petId };
+    if (!found) return { ok: false, reason: 'unknown-pet', message: 'No such pet: ' + petId };
     // 调用方没指定就按这只宠物自己的 display 推（桌面优先）。规则只写在这一处，
     // 周期调度、斜杠命令这些调用点不必各算一遍。周期碎碎念另外受自己的开关管：
     // 关掉就不写 voiceTo（叶子不带这个键 = 谁都不念），气泡照旧弹。
@@ -153,7 +153,7 @@ export function createChatMemory(deps: ChatMemoryInput) {
     // 点名了却没命中 = 配置写错或图已被删：明确失败，不静默换成另一张（点了 A 却看到 B 会以为坏了）。
     const forced = image === undefined ? undefined : matchMeme(pool, image);
     if (image !== undefined && forced === undefined) {
-      return { ok: false, reason: 'unknown-image', message: '表情包不在池内：' + image };
+      return { ok: false, reason: 'unknown-image', message: 'Meme not in the pool: ' + image };
     }
     const meme = forced ?? (found.conf.whisperImageEnabled === true ? pickMeme(pool) : undefined);
     // 模型：条目配置的 whisperModel 优先（留空 = 不指定）；生成侧失败会回落到当前对话的模型重试一次
@@ -233,7 +233,7 @@ export function createChatMemory(deps: ChatMemoryInput) {
       // 宠物在「校验那次读」与这里之间被删了——本函数还要先排 withMemoryLock 的串行队列，
       // 窗口可能是秒级，所以这一支真会命中。明确失败：不生成、不写记忆也不写叶子，
       // 否则会在 memory.json 里永久留下一个已删宠物的分桶，外加一只幽灵叶子。
-      if (!found) return { ok: false, reason: 'unknown-pet', message: '没有这只桌宠：' + petId };
+      if (!found) return { ok: false, reason: 'unknown-pet', message: 'No such pet: ' + petId };
       const rounds = memoryRounds(found.conf);
       // 配图：开关关闭 → 空池（指令与解析都不介入）；目录链按所属条目取。
       // 张数上限（chatImageLimit，0 = 不限制）：整张清单每条消息都要附，截断后费用上限可控。
@@ -325,7 +325,7 @@ export function createChatMemory(deps: ChatMemoryInput) {
       const cfg = readAllConfig(configPaths);
       const found = findPetInstance(cfg, petId);
       // 与对话同一支：宠物随时可能被删，明确失败，不在文件里留没人消费的分桶
-      if (!found) return { ok: false as const, reason: 'unknown-pet' as const, message: '没有这只桌宠：' + petId };
+      if (!found) return { ok: false as const, reason: 'unknown-pet' as const, message: 'No such pet: ' + petId };
       const mem = await readMemory();
       const byPet = mem[found.entry];
       const before = byPet?.[petId]?.messages;

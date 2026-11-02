@@ -15,7 +15,7 @@ const TAB_ID = 'dsh-pet-chat';
 /** 标签类型；`openTab` 按它打开。 */
 const TAB_KIND = 'pet-chat';
 /** 标签头与指南页卡片的文案。 */
-const TAB_TITLE = '桌宠对话';
+const TAB_TITLE = 'Pet chat';
 
 /** 右侧栏标签注册表的最小形状（按用到的成员声明，不引整包类型）。 */
 interface SidebarTabRegistry {
@@ -104,7 +104,7 @@ export function registerPetChatTab(
         id: TAB_KIND,
         order: 400,
         title: () => TAB_TITLE,
-        description: () => '与所有桌宠对话，点标签切换',
+        description: () => 'Chat with every pet; click a tab to switch',
         icon: GuideIcon,
         ...(commandId === undefined ? {} : { commandId }),
       },

@@ -54,6 +54,6 @@ describe('displayOfHotkey —— 数字键到显示位置', () => {
 
   test('键帽文案与顺序同源', () => {
     assert.deepEqual(DISPLAY_ORDER, ['web', 'desktop', 'both', 'none']);
-    assert.deepEqual(DISPLAY_HOTKEY_HINTS, ['1 键', '2 键', '3 键', '4 键']);
+    assert.deepEqual(DISPLAY_HOTKEY_HINTS, ['1', '2', '3', '4']);
   });
 });

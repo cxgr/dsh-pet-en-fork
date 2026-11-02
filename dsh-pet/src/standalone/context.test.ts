@@ -136,7 +136,11 @@ describe('服务替身的降级口径 —— 显式失败，不假装成功', ()
   test('碎碎念用这份 ctx 得到结构化失败 provider-missing（不联网、不编文案）', async () => {
     const context = createStandaloneContext({ port: 1, logger: silentLogger() });
     const result = await generateWhisper(context.ctx as never, { system: '你是一只桌宠' });
-    assert.deepEqual(result, { ok: false, reason: 'provider-missing', message: '当前对话未配置模型' });
+    assert.deepEqual(result, {
+      ok: false,
+      reason: 'provider-missing',
+      message: 'No model configured for the current chat',
+    });
   });
 
   test('凭证恒不可得；llm 清单为空、生成入口是"迭代即失败"的 async iterable', async () => {

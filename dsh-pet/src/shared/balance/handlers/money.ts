@@ -29,7 +29,7 @@ function moneyPercent(v: BalanceView): number | undefined {
 }
 
 /**
- * 一行「余额（峰/谷）¥x.xx」。
+ * 一行「Balance (Peak/Off-peak) ¥x.xx」。
  *
  * 只显示 total 非 0 的币种：负数要显示（透支是真的欠钱），正好 0 的不占地方；CNY 优先，
  * 用符号拼接、以「/」分隔；全为 0 时兜底 ¥0.00，否则气泡会空一行。档位装饰只有提供该计价
@@ -41,11 +41,11 @@ function moneyRows(v: BalanceView): BalanceBubbleRow[] {
     .sort((a, b) => (a.currency === 'CNY' ? 0 : 1) - (b.currency === 'CNY' ? 0 : 1));
   const amount =
     visible.length > 0 ? visible.map((w) => (w.currency === 'USD' ? '$' : '¥') + w.total).join('/') : '¥0.00';
-  if (!v.tier) return [{ role: 'label', text: '余额 ' + amount }];
+  if (!v.tier) return [{ role: 'label', text: 'Balance ' + amount }];
   return [
-    { role: 'label', text: '余额（' },
-    { role: 'tier', tier: v.tier, text: v.tier === 'peak' ? '峰' : '谷' },
-    { role: 'label', text: '）' + amount },
+    { role: 'label', text: 'Balance (' },
+    { role: 'tier', tier: v.tier, text: v.tier === 'peak' ? 'Peak' : 'Off-peak' },
+    { role: 'label', text: ') ' + amount },
   ];
 }
 

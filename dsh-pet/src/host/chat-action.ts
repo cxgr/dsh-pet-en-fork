@@ -40,9 +40,9 @@ export function chatActionNames(animations: unknown): string[] {
  */
 export function actionInstruction(names: readonly string[]): string {
   return (
-    '\n\n[动作] 回复结尾可选做一个动作给用户看，从下列清单里挑最贴合当前语境的：\n' +
+    '\n\n[Action] Optionally perform one action for the user at the end of your reply; pick the one that best fits the current context from this list:\n' +
     names.map((name) => '- ' + name).join('\n') +
-    '\n挑中就在回复最后另起一行写 [动作:名称]（名称原样照抄）；没有合适的就完全不要写这个标记。'
+    '\nIf you pick one, write [动作:名称] on a new line at the very end of your reply (copy the name verbatim); if nothing fits, omit the marker entirely.'
   );
 }
 

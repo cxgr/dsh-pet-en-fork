@@ -107,7 +107,7 @@ describe('装配接线：宿主注入 → helper 解析 → 渲染端文案', ()
       "constants.js 必须从 query 读三态且默认 'web'",
     );
     assert.ok(
-      /\{ desktop: '打开软件', standalone: '打开 AI 设置', web: '打开网站' \}/.test(sprite),
+      /\{ desktop: 'Open app', standalone: 'Open AI settings', web: 'Open website' \}/.test(sprite),
       '三种形态必须有三种文案，web 不得再显示「打开 AI 设置」',
     );
     assert.ok(

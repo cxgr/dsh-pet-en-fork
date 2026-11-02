@@ -42,7 +42,7 @@ function olderNode(h: ChatPanelRuntime['h'], state: ChatPanelState): unknown {
           type: 'button',
           className: 'pet-chat-older-btn',
           onClick: () => state.showOlder(),
-          children: '加载更早',
+          children: 'Load earlier',
         }),
       ],
     });
@@ -54,7 +54,7 @@ function olderNode(h: ChatPanelRuntime['h'], state: ChatPanelState): unknown {
     children: [
       h('span', {
         className: 'pet-chat-older-note',
-        children: capped ? '已经到底了（最多加载 ' + HISTORY_ROUNDS + ' 轮）' : '已经到底了',
+        children: capped ? 'No earlier messages (max ' + HISTORY_ROUNDS + ' rounds)' : 'No earlier messages',
       }),
     ],
   });
@@ -67,13 +67,15 @@ function memoryLineNode(h: ChatPanelRuntime['h'], rounds: number): unknown {
     className: 'pet-chat-memory',
     // 工具栏的「记忆线」按钮按这个标记滚过来：线在不在窗口里、第几个，都由渲染决定
     [MEMORY_LINE_ATTR]: 'true',
-    children: [h('span', { className: 'pet-chat-memory-note', children: `以下 ${rounds} 轮进入桌宠的记忆` })],
+    children: [
+      h('span', { className: 'pet-chat-memory-note', children: `${rounds} rounds below are in the pet's memory` }),
+    ],
   });
 }
 
 /** 消息列表：加载更早 + 记忆边界 + 空态提示或按轮渲染。 */
 function listNode(rt: ChatPanelRuntime, state: ChatPanelState): unknown {
-  const emptyText = state.loading ? '加载中…' : state.petId === '' ? '没有可对话的桌宠' : '还没有聊过天';
+  const emptyText = state.loading ? 'Loading…' : state.petId === '' ? 'No pet to chat with' : 'No chats yet';
   const body =
     state.rounds.length === 0
       ? [rt.h('div', { key: 'empty', className: 'pet-chat-hint', children: emptyText })]
@@ -100,8 +102,8 @@ function previewNode(rt: ChatPanelRuntime, state: ChatPanelState): unknown {
   const { ImageLightbox } = rt.ui;
   return rt.h(ImageLightbox, {
     src: state.previewUrl,
-    alt: '对话图片',
-    labels: { dialog: '图片预览', close: '关闭' },
+    alt: 'Chat image',
+    labels: { dialog: 'Image preview', close: 'Close' },
     onClose: () => state.closeImage(),
   });
 }

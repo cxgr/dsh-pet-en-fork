@@ -37,9 +37,9 @@ export async function handleSessionRoutes(deps: PetRouteDeps, input: RouteInput)
   }
 
   const sessionId = typeof payload?.sessionId === 'string' ? payload.sessionId.trim() : '';
-  if (sessionId === '' || sessionId === UNKNOWN_SESSION_ID) return failResult('bad-request', 'sessionId 必填');
+  if (sessionId === '' || sessionId === UNKNOWN_SESSION_ID) return failResult('bad-request', 'sessionId is required');
   if (sessionId.length > MAX_SESSION_ID_CHARS) {
-    return failResult('bad-request', `sessionId 超过 ${MAX_SESSION_ID_CHARS} 字符`);
+    return failResult('bad-request', `sessionId exceeds ${MAX_SESSION_ID_CHARS} characters`);
   }
 
   const ts = Date.now();

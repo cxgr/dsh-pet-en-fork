@@ -15,12 +15,12 @@ function speakNode(h: ChatPanelRuntime['h'], text: string, ts: number, state: Ch
   const phase = state.speaking?.ts === ts ? state.speaking.phase : 'idle';
   const label =
     phase === 'loading'
-      ? '正在生成语音…'
+      ? 'Generating speech…'
       : phase === 'playing'
-        ? '正在播放'
+        ? 'Playing'
         : phase === 'failed'
-          ? '播放失败，点击重试'
-          : '播放这句';
+          ? 'Playback failed, click to retry'
+          : 'Play this message';
   return h('button', {
     type: 'button',
     className: 'pet-chat-speak is-' + phase,
@@ -46,7 +46,7 @@ function actionNode(h: ChatPanelRuntime['h'], action: string, state: ChatPanelSt
   return h('button', {
     type: 'button',
     className: 'pet-chat-action',
-    'aria-label': '播放动作：' + action,
+    'aria-label': 'Play action: ' + action,
     ...tipAttrs(action),
     onClick: (event: { stopPropagation: () => void }) => {
       // 多选模式下整轮可点：这里必须拦一下，否则点动作键会顺手切换选中
@@ -175,10 +175,10 @@ export function messageNode(h: ChatPanelRuntime['h'], input: MessageNodeInput): 
             : h('button', {
                 type: 'button',
                 className: 'pet-chat-img-btn',
-                'aria-label': '点开看大图',
-                ...tipAttrs('点开看大图'),
+                'aria-label': 'Open full size',
+                ...tipAttrs('Open full size'),
                 onClick: () => onOpenImage(image),
-                children: h('img', { className: 'pet-chat-img', src: image, alt: '对话图片', loading: 'lazy' }),
+                children: h('img', { className: 'pet-chat-img', src: image, alt: 'Chat image', loading: 'lazy' }),
               }),
         ],
       }),
@@ -212,13 +212,13 @@ export function roundNode(
       state.selecting
         ? h('label', {
             className: 'pet-chat-pick',
-            title: '选中这一轮（问 + 答一起删）',
+            title: 'Select this round (question and answer are deleted together)',
             children: [
               h('input', {
                 type: 'checkbox',
                 checked: selected,
                 onChange: () => state.toggleRound(round.ts),
-                'aria-label': '选中这一轮',
+                'aria-label': 'Select this round',
               }),
             ],
           })

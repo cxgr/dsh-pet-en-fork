@@ -48,7 +48,7 @@ export async function handleMenuRoutes(deps: PetRouteDeps, input: RouteInput): P
     // 挂起等待期间调用方断开：不额外处理（最多白挂 MENU_WAIT_MAX_MS，无状态残留）
     const events = await menuRegistry.poll(owner, waitMs);
     // owner 不存在（没注册过 / 被清除了 / 宿主重启过）：业务失败，仍是 200
-    if (events === null) return failResult('unknown-owner', '这个 owner 没有注册，重新注册即可');
+    if (events === null) return failResult('unknown-owner', 'This owner is not registered; just register it again');
     return okResult({ ok: true, events });
   }
 

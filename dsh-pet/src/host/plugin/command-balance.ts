@@ -25,7 +25,7 @@ export function registerBalanceCommand(deps: CommandBalanceInput): void {
     () =>
       ctx.commands.register({
         name: 'balance',
-        description: '手动触发桌宠余额显示（立即弹出余额气泡）',
+        description: 'Manually refresh the pet balance display (pops the balance bubble right away)',
         handler: () => {
           // 余额是全局一份数据，但「给谁看」要按宠物算：全都睡着就没人看，拒绝并回一句台词。
           const visible = effectivePetList().filter((pet) => String(pet.display ?? '') !== 'none');
@@ -33,7 +33,7 @@ export function registerBalanceCommand(deps: CommandBalanceInput): void {
             return { kind: 'error', text: sleepRefusalText(String(visible[0].id ?? '')) };
           }
           void refreshBalance(true); // manual：命令是用户主动敲的
-          return { kind: 'success', text: '已触发桌宠余额显示' };
+          return { kind: 'success', text: 'Pet balance display triggered' };
         },
       }),
     'dsh-pet: /balance command',

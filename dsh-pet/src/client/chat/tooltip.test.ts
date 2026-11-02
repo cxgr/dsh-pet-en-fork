@@ -136,13 +136,13 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('光标进入：在 body 上建一个 tooltip 气泡，正文与显隐状态就位', () => {
     const { doc, restore } = withFakeDom();
     try {
-      const attrs = tipAttrs('播放这句');
+      const attrs = tipAttrs('Play this message');
       attrs.onMouseEnter({ clientX: 100, clientY: 100 });
 
       const bubble = tips(doc);
       assert.equal(bubble.length, 1, '气泡应该挂在 body 上（列表是滚动容器，挂在里面会被裁掉）');
       assert.equal(bubble[0].attrs.get('role'), 'tooltip');
-      assert.equal(bubble[0].textContent, '播放这句');
+      assert.equal(bubble[0].textContent, 'Play this message');
       assert.equal(bubble[0].classList.contains('is-on'), true);
     } finally {
       restore();
@@ -152,7 +152,7 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('摆位：光标右下放得下就放右下，间隙 10px', () => {
     const { doc, restore } = withFakeDom();
     try {
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
       const bubble = tips(doc)[0];
       assert.equal(bubble.style.left, '110px');
       assert.equal(bubble.style.top, '110px');
@@ -164,7 +164,7 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('摆位：光标贴右下角时翻到光标左上，不会伸出视口', () => {
     const { doc, restore } = withFakeDom();
     try {
-      tipAttrs('播放这句').onMouseEnter({ clientX: 1270, clientY: 790 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 1270, clientY: 790 });
       const bubble = tips(doc)[0];
       // 1270 - 10 - 80 = 1180；790 - 10 - 26 = 754
       assert.equal(bubble.style.left, '1180px');
@@ -177,7 +177,7 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('光标离开：只摘显隐，元素留着复用（悬停频繁，反复建删会闪）', () => {
     const { doc, restore } = withFakeDom();
     try {
-      const attrs = tipAttrs('点开看大图');
+      const attrs = tipAttrs('Open full size');
       attrs.onMouseEnter({ clientX: 100, clientY: 100 });
       attrs.onMouseLeave();
 
@@ -192,12 +192,12 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('换一个触发元素再悬停：复用同一个气泡，正文换成新的', () => {
     const { doc, restore } = withFakeDom();
     try {
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
-      tipAttrs('点开看大图').onMouseEnter({ clientX: 200, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Open full size').onMouseEnter({ clientX: 200, clientY: 100 });
 
       const bubble = tips(doc);
       assert.equal(bubble.length, 1);
-      assert.equal(bubble[0].textContent, '点开看大图');
+      assert.equal(bubble[0].textContent, 'Open full size');
     } finally {
       restore();
     }
@@ -206,11 +206,11 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   test('滚动或被按下：气泡立刻收起（fixed 定位不会跟着内容走，留着就错位）', () => {
     const { doc, win, restore } = withFakeDom();
     try {
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
       win.fire('scroll');
       assert.equal(tips(doc)[0].classList.contains('is-on'), false);
 
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
       doc.fire('pointerdown');
       assert.equal(tips(doc)[0].classList.contains('is-on'), false);
     } finally {
@@ -219,7 +219,7 @@ describe('tipAttrs —— 悬停时的 body 层气泡', () => {
   });
 
   test('不接 focus：点击按钮也会获得焦点，接了会在大图/播放期间留一个撤不掉的气泡', () => {
-    const attrs = tipAttrs('播放这句');
+    const attrs = tipAttrs('Play this message');
     assert.deepEqual(Object.keys(attrs).sort(), ['onMouseEnter', 'onMouseLeave']);
   });
 });
@@ -228,7 +228,7 @@ describe('disposeTip —— 卸载回收', () => {
   test('摘掉气泡与全局监听，之后重新悬停能再建一个', () => {
     const { doc, win, restore } = withFakeDom();
     try {
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
       assert.equal(win.count('scroll'), 1);
       assert.equal(doc.count('pointerdown'), 1);
 
@@ -237,7 +237,7 @@ describe('disposeTip —— 卸载回收', () => {
       assert.equal(win.count('scroll'), 0);
       assert.equal(doc.count('pointerdown'), 0);
 
-      tipAttrs('播放这句').onMouseEnter({ clientX: 100, clientY: 100 });
+      tipAttrs('Play this message').onMouseEnter({ clientX: 100, clientY: 100 });
       assert.equal(tips(doc).length, 1, '卸载只是回收，不是停用');
       assert.equal(win.count('scroll'), 1, '监听不能重复叠加');
     } finally {

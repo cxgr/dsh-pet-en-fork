@@ -78,7 +78,7 @@ describe('isCaptureHotkey', () => {
   });
 
   test('文案与按键同一份事实', () => {
-    assert.equal(CAPTURE_HOTKEY_HINT, 'S 键');
+    assert.equal(CAPTURE_HOTKEY_HINT, 'S');
   });
 });
 

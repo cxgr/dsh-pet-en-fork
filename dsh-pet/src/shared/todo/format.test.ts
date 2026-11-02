@@ -37,32 +37,32 @@ function todo(overrides: Partial<TodoItem> = {}): TodoItem {
 
 describe('spanText —— 时长写成人话', () => {
   test('分钟 / 小时 / 天，最小一分钟', () => {
-    assert.equal(spanText(0), '1分钟');
-    assert.equal(spanText(25 * 60 * 1000), '25分钟');
-    assert.equal(spanText(2 * 60 * 60 * 1000), '2小时');
-    assert.equal(spanText(3 * 24 * 60 * 60 * 1000), '3天');
+    assert.equal(spanText(0), '1 min');
+    assert.equal(spanText(25 * 60 * 1000), '25 min');
+    assert.equal(spanText(2 * 60 * 60 * 1000), '2 h');
+    assert.equal(spanText(3 * 24 * 60 * 60 * 1000), '3 d');
   });
 });
 
 describe('dueLabel —— 绝对说法', () => {
   test('无期限', () => {
-    assert.equal(dueLabel(null, NOW), '无期限');
+    assert.equal(dueLabel(null, NOW), 'No due date');
   });
 
   test('今天 / 明天 / 后天 / 本周内 / 更远', () => {
-    assert.equal(dueLabel(new Date(2026, 9, 29, 18, 0).getTime(), NOW), '今天 18:00');
-    assert.equal(dueLabel(new Date(2026, 9, 30, 9, 0).getTime(), NOW), '明天 09:00');
-    assert.equal(dueLabel(new Date(2026, 9, 31, 8, 5).getTime(), NOW), '后天 08:05');
+    assert.equal(dueLabel(new Date(2026, 9, 29, 18, 0).getTime(), NOW), 'Today 18:00');
+    assert.equal(dueLabel(new Date(2026, 9, 30, 9, 0).getTime(), NOW), 'Tomorrow 09:00');
+    assert.equal(dueLabel(new Date(2026, 9, 31, 8, 5).getTime(), NOW), 'In 2 days 08:05');
     // 2026-11-02 是周一（与 10-29 周四同一周之后）
-    assert.equal(dueLabel(new Date(2026, 10, 2, 8, 0).getTime(), NOW), '周一 08:00');
-    assert.equal(dueLabel(new Date(2026, 10, 8, 8, 0).getTime(), NOW), '11月8日 08:00');
+    assert.equal(dueLabel(new Date(2026, 10, 2, 8, 0).getTime(), NOW), 'Mon 08:00');
+    assert.equal(dueLabel(new Date(2026, 10, 8, 8, 0).getTime(), NOW), 'Nov 8 08:00');
   });
 });
 
 describe('remainingLabel —— 相对说法', () => {
   test('未到期 / 已逾期 / 无期限', () => {
-    assert.equal(remainingLabel(NOW + 90 * 60 * 1000, NOW), '还剩2小时');
-    assert.equal(remainingLabel(NOW - 2 * 60 * 60 * 1000, NOW), '已逾期2小时');
+    assert.equal(remainingLabel(NOW + 90 * 60 * 1000, NOW), '2 h left');
+    assert.equal(remainingLabel(NOW - 2 * 60 * 60 * 1000, NOW), 'Overdue by 2 h');
     assert.equal(remainingLabel(null, NOW), '');
   });
 });
@@ -80,15 +80,15 @@ describe('todoUrgency —— 紧迫度', () => {
 describe('metaLabel —— 列表副标题', () => {
   test('未完成：绝对 + 相对；逾期只留相对', () => {
     const dueAt = new Date(2026, 9, 29, 17, 30).getTime();
-    assert.equal(metaLabel(todo({ dueAt }), NOW), '今天 17:30 · 还剩8小时');
-    assert.equal(metaLabel(todo({ dueAt: NOW - 2 * 60 * 60 * 1000 }), NOW), '已逾期2小时');
-    assert.equal(metaLabel(todo(), NOW), '无期限');
+    assert.equal(metaLabel(todo({ dueAt }), NOW), 'Today 17:30 · 8 h left');
+    assert.equal(metaLabel(todo({ dueAt: NOW - 2 * 60 * 60 * 1000 }), NOW), 'Overdue by 2 h');
+    assert.equal(metaLabel(todo(), NOW), 'No due date');
   });
 
   test('已完成：划线状态下的说法', () => {
     const dueAt = new Date(2026, 9, 29, 17, 30).getTime();
-    assert.equal(metaLabel(todo({ dueAt, done: true }), NOW), '已完成 · 今天 17:30');
-    assert.equal(metaLabel(todo({ done: true }), NOW), '已完成');
+    assert.equal(metaLabel(todo({ dueAt, done: true }), NOW), 'Done · Today 17:30');
+    assert.equal(metaLabel(todo({ done: true }), NOW), 'Done');
   });
 });
 

@@ -93,7 +93,7 @@ export async function handleInteractionRoutes(deps: PetRouteDeps, input: RouteIn
       if (r.ok) return okResult({ ok: true, text: r.text, ...(r.image ? { image: r.image } : {}) });
       // 真实 reason 原样透出（独立模式是 `provider-missing`，见 ./whisper 的联合体）——
       // 不再把一切失败糊成 generate-error，调用方据此能分清「没配模型」与「生成炸了」。
-      return failResult(r.reason, r.message ?? '生成失败');
+      return failResult(r.reason, r.message ?? 'Generation failed');
     } catch (e) {
       return failResult('generate-error', e instanceof Error ? e.message : String(e));
     }
@@ -115,10 +115,10 @@ export async function handleInteractionRoutes(deps: PetRouteDeps, input: RouteIn
     }
     const o = parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
     // 空文本不需要读配置就能判定：先短路，别为一个必然失败的请求去碰磁盘
-    if (!normalizeBroadcastText(o.text)) return failResult('bad-request', 'text 为空');
+    if (!normalizeBroadcastText(o.text)) return failResult('bad-request', 'text is empty');
     // duration 同理：判定不需要配置，先短路（anim 没有非法值，宽松口径下永远有结论）
     const duration = normalizeBroadcastDuration(o.duration);
-    if (duration === null) return failResult('bad-request', 'duration 必须是 ≥0 的有限数字（毫秒）');
+    if (duration === null) return failResult('bad-request', 'duration must be a finite number >= 0 (milliseconds)');
     const anim = normalizeBroadcastAnim(o.anim);
     try {
       const cfg = readAllConfig(configPaths);

@@ -20,11 +20,11 @@ export const PET_CALL_IDENTITY = 'dsh-pet';
  */
 export function noTextReason(finish: unknown): string {
   const { kind, failure } = (finish ?? {}) as { kind?: unknown; failure?: unknown };
-  if (kind === 'aborted') return '生成已取消';
-  if (kind === 'max-tokens') return '输出达到上限，未产出正文';
-  if (kind !== 'error') return '模型未返回文本';
+  if (kind === 'aborted') return 'Generation cancelled';
+  if (kind === 'max-tokens') return 'Hit the output limit before any text was produced';
+  if (kind !== 'error') return 'The model returned no text';
   const { message, code } = (failure ?? {}) as { message?: unknown; code?: unknown };
   if (typeof message === 'string' && message.trim() !== '') return message;
   if (typeof code === 'string' && code.trim() !== '') return code;
-  return '未提供失败原因';
+  return 'No failure reason given';
 }

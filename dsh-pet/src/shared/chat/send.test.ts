@@ -79,7 +79,7 @@ describe('sendChat 请求体', () => {
     const original = globalThis.fetch;
     globalThis.fetch = (async () => new Response('null', { status: 200 })) as typeof fetch;
     try {
-      await assert.rejects(() => sendChat('http://127.0.0.1/dsh-pet-7340/chat', '在吗'), /对话响应非法/);
+      await assert.rejects(() => sendChat('http://127.0.0.1/dsh-pet-7340/chat', '在吗'), /invalid chat response/);
     } finally {
       globalThis.fetch = original;
     }

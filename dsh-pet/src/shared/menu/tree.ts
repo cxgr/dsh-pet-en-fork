@@ -6,6 +6,7 @@
  * @module dsh-pet/src/shared/menu/tree
  */
 import { DISPLAY_HOTKEY_HINTS, DISPLAY_ORDER } from '../display-hotkey.ts';
+import { animLabel } from './labels.ts';
 import { type Animations, type Category, type PetDisplay } from '../types.ts';
 import type { MenuBranch, MenuLeaf, MenuMoreItem, MenuNode } from './types.ts';
 
@@ -20,10 +21,10 @@ export const isSleepAllowedAction = (action: string | undefined): boolean =>
 
 /** 四个显示位置的菜单文案；键是 {@link DISPLAY_ORDER} 的元素，顺序以那边为准。 */
 const DISPLAY_LABELS: Readonly<Record<PetDisplay, string>> = {
-  web: '仅网页',
-  desktop: '仅桌面',
-  both: '两者',
-  none: '都不',
+  web: 'Web only',
+  desktop: 'Desktop only',
+  both: 'Both',
+  none: 'Neither',
 };
 
 /** 「显示位置」子菜单：两端注入同一份，文案与设置页的显示位置下拉框一致。
@@ -31,7 +32,7 @@ const DISPLAY_LABELS: Readonly<Record<PetDisplay, string>> = {
  *  「都不」是单向门（恢复入口是设置页），其余三个值都能从某一端改回来。
  *  右侧键帽由 `1`-`4` 数字键的同一份顺序派生，改顺序只改 {@link DISPLAY_ORDER}。 */
 export const displayMenuBranch = (): MenuBranch => ({
-  label: '显示位置',
+  label: 'Display position',
   children: DISPLAY_ORDER.map((display, index): MenuLeaf => ({
     label: DISPLAY_LABELS[display],
     action: 'set-display',
@@ -41,7 +42,7 @@ export const displayMenuBranch = (): MenuBranch => ({
 });
 
 /** 第三方菜单项统一收在这个一级菜单下（宿主自己的菜单项不进这里）。 */
-export const MORE_MENU_LABEL = '更多';
+export const MORE_MENU_LABEL = 'More';
 
 /** 从 /state 的 sections.menu.data 里读出本端要显示的第三方菜单项。
  *  target 等于本端身份或 both 才收；target 缺失或不认识时按 both 处理——老宿主没有这个字段，
@@ -95,23 +96,23 @@ export function buildMoreBranch(items: readonly MenuMoreItem[]): MenuBranch | nu
 
 /** 事件名 → 分类标签（无映射时用事件名本身）。 */
 const EVENT_LABELS: Record<string, string> = {
-  balance: '余额档位',
-  whisper: '碎碎念',
-  workStatus: '工作状态',
+  balance: 'Balance tiers',
+  whisper: 'Whisper',
+  workStatus: 'Work status',
 };
 
-/** 把动画名包成叶子。 */
-export const leaf = (anim: string): MenuLeaf => ({ label: anim, anim });
+/** 把动画名包成叶子：显示名走英文表，载荷仍是原名（= 素材文件名）。 */
+export const leaf = (anim: string): MenuLeaf => ({ label: animLabel(anim), anim });
 
 /** 由成品 animations 配置推导菜单树：一级「动作」→ 二级分类 → 三级动画名；空池与空分类自动省略。 */
 export function buildMenuTree(animations: Animations): MenuNode[] {
   const groups: MenuNode[] = [];
   const pools: Array<[string, string[]]> = [
-    ['待机', animations.idle],
-    ['转向', animations.turn],
-    ['拖拽', animations.drag],
-    ['点击回应', animations.clicks],
-    ['移动', animations.moves.actions.map((m) => m.name)],
+    ['Idle', animations.idle],
+    ['Turn', animations.turn],
+    ['Drag', animations.drag],
+    ['Click reactions', animations.clicks],
+    ['Move', animations.moves.actions.map((m) => m.name)],
   ];
   for (const [label, pool] of pools) {
     if (pool.length) groups.push({ label, children: pool.map(leaf) });
@@ -119,7 +120,7 @@ export function buildMenuTree(animations: Animations): MenuNode[] {
   // 随机动作分类：noMirror 分类照样可点播，播放端朝右时强制朝左（见 isNoMirrorAnimation）
   const cats = (animations.categories ?? []).filter((c) => c.actions.length > 0);
   for (const c of cats) {
-    groups.push({ label: c.id, children: c.actions.map(leaf) });
+    groups.push({ label: animLabel(c.id), children: c.actions.map(leaf) });
   }
   // 事件动画：每个事件一个分类，不来自随机链；数组槽位展平为逐个叶子，候选都可点播预览。
   const events = animations.events ?? {};
@@ -133,7 +134,7 @@ export function buildMenuTree(animations: Animations): MenuNode[] {
     if (names.length) groups.push({ label: EVENT_LABELS[key] ?? key, children: names.map(leaf) });
   }
   if (!groups.length) return [];
-  return [{ label: '动作', children: groups }];
+  return [{ label: 'Actions', children: groups }];
 }
 
 /** 该动画是否属于 noMirror 分类（文字类）：朝右镜像时点播前强制朝左，避免文字镜像。 */

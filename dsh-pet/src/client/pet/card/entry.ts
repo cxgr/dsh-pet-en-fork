@@ -240,12 +240,12 @@ export function createCardEntry(rt: CardEntryRuntime) {
     const toggleSleepRef = useRef<() => void>(() => {});
     toggleSleepRef.current = () => {
       const asleep = live.current.flow?.sleeping() ?? false;
-      runMenuAction(asleep ? { label: '起来', action: 'wake' } : { label: '睡觉', action: 'sleep' });
+      runMenuAction(asleep ? { label: 'Wake up', action: 'wake' } : { label: 'Sleep', action: 'sleep' });
     };
     // 数字键切显示位置：与右键「显示位置」子菜单同一条动作派发（写 display 配置，宿主重启生效）。
     const switchDisplayRef = useRef<(display: PetDisplay) => void>(() => {});
     switchDisplayRef.current = (display) => {
-      runMenuAction({ label: '显示位置', action: 'set-display', display });
+      runMenuAction({ label: 'Display position', action: 'set-display', display });
     };
     // 按住说话的按下/松开同样每次渲染都新建闭包；状态机只建一次，只能经 ref 取最新的那两个。
     const startChatHearRef = useRef<() => void>(startChatHear);
@@ -349,22 +349,22 @@ export function createCardEntry(rt: CardEntryRuntime) {
       const asleep = live.current.flow?.sleeping() ?? false;
       const canSleep = (cfgRef.current.animations.sleep ?? []).length > 0;
       const sleepItem: MenuNode = asleep
-        ? { label: '起来', action: 'wake', hint: SLEEP_HOTKEY_HINT }
-        : { label: '睡觉', action: 'sleep', hint: SLEEP_HOTKEY_HINT };
+        ? { label: 'Wake up', action: 'wake', hint: SLEEP_HOTKEY_HINT }
+        : { label: 'Sleep', action: 'sleep', hint: SLEEP_HOTKEY_HINT };
       // 顺序与桌面端同一排法：余额 / 待办 / 碎碎念 / 对话 / 配图 / 睡觉 → 动作树 → 显示位置 / 回到初始位置。
       // 桌面专属的两项（打开软件、重载配置）在网页端没有对应动作，不出现。
       const tools: MenuNode[] = [
-        { label: '查看余额', action: 'show-balance' },
-        { label: '待办事项', action: 'todo', hint: TODO_HOTKEY_HINT },
-        { label: '碎碎念', action: 'whisper' },
-        { label: '对话', action: 'chat', hint: CHAT_HOTKEY_HINT },
+        { label: 'Show balance', action: 'show-balance' },
+        { label: 'Todo list', action: 'todo', hint: TODO_HOTKEY_HINT },
+        { label: 'Whisper', action: 'whisper' },
+        { label: 'Chat', action: 'chat', hint: CHAT_HOTKEY_HINT },
         ...(memes ? [memes] : []),
         ...(canSleep ? [sleepItem] : []),
       ];
       const tail: MenuNode[] = [
         // 显示位置子菜单与桌面端同一份；改成不含 web 的值后本宠物会从页面消失。
         displayMenuBranch(),
-        { label: '回到初始位置', action: 'home' },
+        { label: 'Reset position', action: 'home' },
       ];
       const tree: MenuNode[] = [
         ...tools,

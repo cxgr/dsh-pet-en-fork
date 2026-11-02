@@ -134,7 +134,7 @@ describe('createTray —— 退出项的分支', () => {
       pets: [{ label: 'a', id: 'a', display: 'both' }],
     });
     await tray.start();
-    const quit = lastMenu(menus).find((item) => item.label === '退出');
+    const quit = lastMenu(menus).find((item) => item.label === 'Quit');
     assert.ok(quit?.click, '应用模式必须有退出项');
     quit.click();
     assert.deepEqual(quits, ['app.quit']);
@@ -151,7 +151,7 @@ describe('createTray —— 退出项的分支', () => {
       pets: [{ label: 'a', id: 'a', display: 'both' }],
     });
     await tray.start();
-    const quit = lastMenu(menus).find((item) => item.label === '退出');
+    const quit = lastMenu(menus).find((item) => item.label === 'Quit');
     assert.ok(quit?.click, '宿主允许时应有退出项');
     quit.click();
     assert.deepEqual(quits, [], 'bridge 下不得自己退');
@@ -166,7 +166,7 @@ describe('createTray —— 退出项的分支', () => {
     });
     await tray.start();
     assert.equal(
-      lastMenu(menus).some((item) => item.label === '退出'),
+      lastMenu(menus).some((item) => item.label === 'Quit'),
       false,
     );
   });
